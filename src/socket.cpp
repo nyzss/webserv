@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:05:40 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:06:31 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:23:48 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,6 @@ Socket::Socket (const Socket &val)
 
 Socket::~Socket()
 {
+	if (this->_fd != -1)
+		close(this->_fd);
 }

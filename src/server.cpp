@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:20:05 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:23:37 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Server::Server(const Server &val) : Socket(val)
 
 Server::~Server()
 {
-	close_server();
+	log("Closing server...", *this);
 }
 
 void	Server::start_server()
@@ -55,18 +55,14 @@ void	Server::start_server()
 	log("Server started! Currently listening for requests..", *this);
 }
 
-void	Server::close_server()
-{
-	if (this->_fd != -1)
-		close(this->_fd);
-
-	log("Closing server...", *this);
-}
-
 std::string Server::get_address() const
 {
 	std::ostringstream	s;
 
 	s << this->_ip << ":" << this->_port;
 	return s.str();
+}
+
+void Server::accept_connection() const
+{
 }

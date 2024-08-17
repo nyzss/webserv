@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:20:51 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:22:34 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ public:
 	void start_server();
 	void close_server();
 
-	// void accept_connection();
+	void accept_connection() const;
 
 public:
 	Server (const std::string &ip, PORT port);

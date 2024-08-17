@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:01:15 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:24:05 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,5 @@ Client::Client(const Client &value) : Socket(value)
 
 Client::~Client()
 {
-	if (this->_fd != -1)
-		close(this->_fd);
 	// log();
 }
