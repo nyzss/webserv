@@ -6,17 +6,23 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:33:40 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 21:02:41 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <webserv.hpp>
 
+void	handle_sigint(int sig)
+{
+	(void)sig;
+	throw std::runtime_error("exiting...");
+}
+
 int main()
 {
 	try
 	{
-
+		signal(SIGINT, handle_sigint);
 		Server	serv("0.0.0.0", 8080);
 
 		serv.start_server();
