@@ -6,11 +6,15 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:00:26 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:13:43 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
+
+Server::Server() : Socket()
+{
+}
 
 Server::Server (const std::string &ip, PORT port) : Socket()
 {

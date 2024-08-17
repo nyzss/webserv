@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 19:54:47 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:17:05 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+#include <socket.hpp>
 #include <webserv.hpp>
 
 # define MAX_CONNECTION_POOL 5
@@ -21,9 +22,7 @@
 class Server : public Socket
 {
 private:
-
-private:
-	Server () : Socket() {}
+	Server ();
 
 public:
 	void start_server();

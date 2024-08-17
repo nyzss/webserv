@@ -19,7 +19,7 @@ DEP_FLAG = -MMD
 SRC_DIR = src/
 
 ############ CPP FILES #############
-SRC_FILES = main.cpp server.cpp log.cpp client.cpp
+SRC_FILES = main.cpp server.cpp log.cpp client.cpp socket.cpp
 
 SRCS = $(addprefix $(SRC_DIR), $(SRC_FILES)) \
 

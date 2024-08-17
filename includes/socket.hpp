@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:36:56 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 19:55:05 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:14:21 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,6 @@
 
 class Socket
 {
-public:
-	typedef int	SOCKET;
-	typedef int	PORT;
-
 protected:
 	SOCKET		_fd;
 	PORT		_port;
@@ -29,14 +25,8 @@ protected:
 	std::string	_ip;
 
 protected:
-	Socket () : _fd(-1), _port(-1) {}
-	Socket (const Socket &val)
-	{
-		this->_data = val._data;
-		this->_fd = val._fd;
-		this->_port = val._port;
-		this->_ip = val._ip;
-	}
+	Socket ();
+	Socket (const Socket &val);
 public:
 	virtual ~Socket () = 0;
 };
