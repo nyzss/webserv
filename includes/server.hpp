@@ -6,18 +6,15 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 10:57:09 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 11:22:58 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <webserv.hpp>
 
 #pragma once
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include <iostream>
-
+#include <webserv.hpp>
 
 class Server
 {
@@ -29,12 +26,17 @@ private:
 	SOCKET		_fd;
 	PORT		_port;
 	sockaddr_in	_data;
+	std::string	_ip;
 
 private:
-	Server (std::string ip, PORT port);
-	Server (const Server &val);
-	Server & operator=(const Server &val);
+	Server () : _fd(-1) {}
+
 public:
+	void close_server();
+
+public:
+	Server (const std::string &ip, PORT port);
+	Server (const Server &val);
 	~Server ();
 };
 

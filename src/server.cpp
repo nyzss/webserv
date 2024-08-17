@@ -6,31 +6,41 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 10:56:03 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 11:26:07 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 
-Server::Server (std::string ip, int port)
+Server::Server (const std::string &ip, PORT port) : _fd(-1)
 {
+	this->_port = port;
+	this->_ip = ip;
+	this->_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	this->_data.sin_family = AF_INET;
+	this->_data.sin_port = htons(port);
+	this->_data.sin_addr.s_addr = inet_addr(ip.c_str());
 
 }
 
 Server::Server(const Server &val)
 {
+	this->_data = val._data;
+	this->_fd = val._fd;
+	this->_port = val._port;
+	this->_ip = val._ip;
 }
 
 Server::~Server()
 {
-
+	close_server();
 }
 
-Server & Server::operator=(const Server &val)
+void	Server::close_server()
 {
-	if (this != &val)
-	{
-		// Copy data members from val to this object
-	}
-	return *this;
+	if (this->_fd != -1)
+		close(this->_fd);
+
+	log("Closing server...");
 }

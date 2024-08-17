@@ -17,7 +17,9 @@ CFLAGS = -Wall -Werror -Wextra -std=c++98 -g # -O3
 DEP_FLAG = -MMD
 
 SRC_DIR = src/
-SRC_FILES = main.cpp
+
+############ CPP FILES #############
+SRC_FILES = main.cpp server.cpp log.cpp
 
 SRCS = $(addprefix $(SRC_DIR), $(SRC_FILES)) \
 
