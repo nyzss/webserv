@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 11:22:58 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 11:44:10 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ public:
 	Server (const std::string &ip, PORT port);
 	Server (const Server &val);
 	~Server ();
+
+// getters/setters
+public:
+	std::string get_address() const;
 };
 
 #endif /* SERVER_HPP */

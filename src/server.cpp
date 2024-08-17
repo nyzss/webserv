@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 11:26:07 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 11:46:59 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,5 +42,13 @@ void	Server::close_server()
 	if (this->_fd != -1)
 		close(this->_fd);
 
-	log("Closing server...");
+	log("Closing server...", *this);
+}
+
+std::string Server::get_address() const
+{
+	std::ostringstream	s;
+
+	s << this->_ip << ":" << this->_port;
+	return s.str();
 }
