@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:37:06 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:55:41 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,14 @@ void	Client::get_connection()
 	buf[bytes] = '\0';
 
 	std::cout << buf << std::endl;
+
+
+	std::cout << "-------CLIENT DATA--------" << std::endl;
+	std::cout << "socklen_t: " << this->_sock_len << std::endl;
+	std::cout << "sin_addr: " << inet_ntoa(this->_data.sin_addr) << std::endl;
+	std::cout << "port: " << ntohs(this->_data.sin_port) << std::endl;
+	std::cout << "family: " << this->_data.sin_family << std::endl;
+	std::cout << "-----------END---------" << std::endl;
 }
 
 Client::Client(const Client &value) : Socket(value)
