@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 11:44:10 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 12:01:09 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 # define SERVER_HPP
 
 #include <webserv.hpp>
+
+# define MAX_CONNECTION_POOL 5
 
 class Server
 {
@@ -32,6 +34,7 @@ private:
 	Server () : _fd(-1) {}
 
 public:
+	void start_server();
 	void close_server();
 
 public:
@@ -42,6 +45,7 @@ public:
 // getters/setters
 public:
 	std::string get_address() const;
+
 };
 
 #endif /* SERVER_HPP */

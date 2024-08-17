@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 11:46:59 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 12:08:28 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,23 @@ Server::Server(const Server &val)
 Server::~Server()
 {
 	close_server();
+}
+
+void	Server::start_server()
+{
+	int r_bind = bind(this->_fd, (sockaddr *)&this->_data, sizeof(this->_data));
+	if (r_bind < 0)
+	{
+		log_err("Couldn't bind server.", *this);
+		throw std::runtime_error("bind error in start_server");
+	}
+
+	int r_listen = listen(this->_fd, MAX_CONNECTION_POOL);
+	if (r_listen < 0)
+	{
+		log_err("Couldn't listen on server address/port.", *this);
+		throw std::runtime_error("listen error in start_server");
+	}
 }
 
 void	Server::close_server()

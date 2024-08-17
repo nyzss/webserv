@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 11:21:44 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 12:07:20 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,18 @@
 
 int main()
 {
-	Server	serv("0.0.0.0", 8080);
+	try
+	{
+
+		Server	serv("0.0.0.0", 8080);
+
+		serv.start_server();
+
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 }
 
 // # define BUF_SIZE 1024
