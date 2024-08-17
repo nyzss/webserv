@@ -6,15 +6,36 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 11:12:19 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 11:45:14 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 12:06:40 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <log.hpp>
 
-// could also make a function that takes in a server and outputs that too
+inline static std::string	log_data(const std::string &s);
+inline static std::string	log_data(const std::string &s, const Server &serv);
 
 void	log(const std::string &s)
+{
+	std::cout << log_data(s);
+}
+
+void	log(const std::string &s, const Server &serv)
+{
+	std::cout << log_data(s, serv);
+}
+
+void	log_err(const std::string &s)
+{
+	std::cerr << log_data(s);
+}
+
+void	log_err(const std::string &s, const Server &serv)
+{
+	std::cerr << log_data(s, serv);
+}
+
+inline static std::string	log_data(const std::string &s)
 {
 	std::ostringstream stream;
 	std::time_t result = std::time(NULL);
@@ -25,10 +46,10 @@ void	log(const std::string &s)
 	stream << " " << s;
 	stream << std::endl;
 
-	std::cout << stream.str();
+	return stream.str();
 }
 
-void	log(const std::string &s, const Server &serv)
+inline static std::string	log_data(const std::string &s, const Server &serv)
 {
 	std::ostringstream stream;
 	std::time_t result = std::time(NULL);
@@ -40,5 +61,5 @@ void	log(const std::string &s, const Server &serv)
 	stream << s;
 	stream << std::endl;
 
-	std::cout << stream.str();
+	return stream.str();
 }
