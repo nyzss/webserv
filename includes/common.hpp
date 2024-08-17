@@ -1,34 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   socket.hpp                                         :+:      :+:    :+:   */
+/*   common.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/17 19:36:56 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:19:54 by okoca            ###   ########.fr       */
+/*   Created: 2024/08/17 20:19:18 by okoca             #+#    #+#             */
+/*   Updated: 2024/08/17 20:19:37 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-#ifndef SOCKET_HPP
-# define SOCKET_HPP
+#ifndef COMMON_HPP
+# define COMMON_HPP
 
-#include <common.hpp>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <signal.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <cstring>
+#include <sstream>
+#include <ctime>
 
-class Socket
-{
-protected:
-	SOCKET		_fd;
-	PORT		_port;
-	sockaddr_in	_data;
-	std::string	_ip;
+typedef int	SOCKET;
+typedef int	PORT;
 
-protected:
-	Socket ();
-	Socket (const Socket &val);
-public:
-	virtual ~Socket () = 0;
-};
-
-#endif /* SOCKET_HPP */
+#endif /* COMMON_HPP */
