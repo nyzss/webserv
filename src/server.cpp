@@ -6,13 +6,13 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 12:08:28 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/17 20:00:26 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 
-Server::Server (const std::string &ip, PORT port) : _fd(-1)
+Server::Server (const std::string &ip, PORT port) : Socket()
 {
 	this->_port = port;
 	this->_ip = ip;
@@ -21,15 +21,10 @@ Server::Server (const std::string &ip, PORT port) : _fd(-1)
 	this->_data.sin_family = AF_INET;
 	this->_data.sin_port = htons(port);
 	this->_data.sin_addr.s_addr = inet_addr(ip.c_str());
-
 }
 
-Server::Server(const Server &val)
+Server::Server(const Server &val) : Socket(val)
 {
-	this->_data = val._data;
-	this->_fd = val._fd;
-	this->_port = val._port;
-	this->_ip = val._ip;
 }
 
 Server::~Server()
@@ -39,6 +34,7 @@ Server::~Server()
 
 void	Server::start_server()
 {
+	log("Server is starting..", *this);
 	int r_bind = bind(this->_fd, (sockaddr *)&this->_data, sizeof(this->_data));
 	if (r_bind < 0)
 	{
@@ -52,6 +48,7 @@ void	Server::start_server()
 		log_err("Couldn't listen on server address/port.", *this);
 		throw std::runtime_error("listen error in start_server");
 	}
+	log("Server started! Currently listening for requests..", *this);
 }
 
 void	Server::close_server()

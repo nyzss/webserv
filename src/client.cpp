@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 19:40:48 by okoca            ###   ########.fr       */
+/*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
+/*   Updated: 2024/08/17 20:01:15 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#include "client.hpp"
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <signal.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <cstring>
-#include <sstream>
-#include <ctime>
+Client::Client() : Socket()
+{
+}
 
-#include <socket.hpp>
-#include <log.hpp>
-#include <server.hpp>
+Client::Client(SOCKET server_sock) : Socket(), _server_sock(server_sock)
+{
+}
 
-extern bool	end_sig;
+Client::Client(const Client &value) : Socket(value)
+{
+	this->_server_sock = value._server_sock;
+}
 
-#endif /* WEBSERV_HPP */
+Client::~Client()
+{
+	if (this->_fd != -1)
+		close(this->_fd);
+	// log();
+}

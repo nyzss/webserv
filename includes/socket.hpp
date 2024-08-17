@@ -1,45 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 19:54:47 by okoca            ###   ########.fr       */
+/*   Created: 2024/08/17 19:36:56 by okoca             #+#    #+#             */
+/*   Updated: 2024/08/17 19:55:05 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#ifndef SOCKET_HPP
+# define SOCKET_HPP
 
 #include <webserv.hpp>
 
-# define MAX_CONNECTION_POOL 5
-
-class Server : public Socket
+class Socket
 {
-private:
-
-private:
-	Server () : Socket() {}
-
 public:
-	void start_server();
-	void close_server();
+	typedef int	SOCKET;
+	typedef int	PORT;
 
-	// void accept_connection();
+protected:
+	SOCKET		_fd;
+	PORT		_port;
+	sockaddr_in	_data;
+	std::string	_ip;
 
+protected:
+	Socket () : _fd(-1), _port(-1) {}
+	Socket (const Socket &val)
+	{
+		this->_data = val._data;
+		this->_fd = val._fd;
+		this->_port = val._port;
+		this->_ip = val._ip;
+	}
 public:
-	Server (const std::string &ip, PORT port);
-	Server (const Server &val);
-	~Server ();
-
-// getters/setters
-public:
-	std::string get_address() const;
-
+	virtual ~Socket () = 0;
 };
 
-#endif /* SERVER_HPP */
+#endif /* SOCKET_HPP */
