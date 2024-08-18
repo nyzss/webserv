@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 16:15:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 16:34:01 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 16:36:41 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,10 @@ public:
 	dumb_ptr (T val)
 	{
 		this->_data = new T(val);
+	}
+	dumb_ptr (T *val)
+	{
+		this->_data = val;
 	}
 	dumb_ptr (const dumb_ptr &val) : _data()
 	{
