@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:19:46 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 16:22:49 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "socket.hpp"
 #include "log.hpp"
 #include "server.hpp"
+#include "dumb_ptr.hpp"
 
 extern bool	end_sig;
 

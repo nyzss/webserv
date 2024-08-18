@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:36:56 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:19:54 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 16:05:35 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,10 @@ protected:
 	PORT		_port;
 	sockaddr_in	_data;
 	std::string	_ip;
-
-protected:
-	Socket ();
-	Socket (const Socket &val);
 public:
+	Socket ();
+	Socket	&operator=(const Socket &val);
+	Socket (const Socket &val);
 	virtual ~Socket () = 0;
 };
 

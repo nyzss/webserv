@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 14:53:35 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 16:06:12 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,8 @@
 
 class Server : public Socket
 {
-private:
-
 public:
 	void start_server();
-
 	void connect() const;
 
 public:
@@ -40,7 +37,6 @@ public:
 public:
 	std::string get_address() const;
 	SOCKET	get_socket_fd() const;
-
 };
 
 #endif /* SERVER_HPP */

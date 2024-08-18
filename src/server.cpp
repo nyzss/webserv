@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 14:54:14 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 17:07:11 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,13 @@ Server::Server (const std::string &ip, PORT port) : Socket()
 	this->_ip = ip;
 	this->_fd = socket(AF_INET, SOCK_STREAM, 0);
 
+	// int	opt = 1;
+	// setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	// setsockopt(_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+
 	this->_data.sin_family = AF_INET;
-	this->_data.sin_port = htons(port);
-	this->_data.sin_addr.s_addr = inet_addr(ip.c_str());
+	this->_data.sin_port = htons(_port);
+	this->_data.sin_addr.s_addr = inet_addr(_ip.c_str());
 }
 
 Server::Server(const Server &val) : Socket(val)
@@ -38,7 +42,6 @@ Server::~Server()
 
 void	Server::start_server()
 {
-	log("Server is starting..", *this);
 	int r_bind = bind(this->_fd, (sockaddr *)&this->_data, sizeof(this->_data));
 	if (r_bind < 0)
 	{
