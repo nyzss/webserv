@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:25:59 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 14:53:35 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 class Server : public Socket
 {
 private:
-	Server ();
 
 public:
 	void start_server();
@@ -32,6 +31,7 @@ public:
 	void connect() const;
 
 public:
+	Server ();
 	Server (const std::string &ip, PORT port);
 	Server (const Server &val);
 	~Server ();
@@ -39,6 +39,7 @@ public:
 // getters/setters
 public:
 	std::string get_address() const;
+	SOCKET	get_socket_fd() const;
 
 };
 

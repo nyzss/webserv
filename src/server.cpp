@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:33:53 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 14:54:14 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,11 @@ std::string Server::get_address() const
 
 	s << this->_ip << ":" << this->_port;
 	return s.str();
+}
+
+SOCKET	Server::get_socket_fd() const
+{
+	return this->_fd;
 }
 
 void Server::connect() const
