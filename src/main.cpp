@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 21:02:41 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 15:23:19 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,65 @@ void	handle_sigint(int sig)
 	throw std::runtime_error("exiting...");
 }
 
+# define MAX_EPOLL_EVENTS 16
+
+
+// Server	serv("0.0.0.0", 8080);
+
+// serv.start_server();
+// serv.connect();
 int main()
 {
 	try
 	{
 		signal(SIGINT, handle_sigint);
-		Server	serv("0.0.0.0", 8080);
 
-		serv.start_server();
+		int	epoll_instance = -1;
+		int	event_ready = 0;
+		std::vector<Server> servers;
+		servers.push_back(Server("0.0.0.0", 8080));
+		servers.push_back(Server("0.0.0.0", 8081));
 
-		serv.connect();
+		std::vector<epoll_event>	e_servers;
+		// std::vector<epoll_event>	e_queue;
+		epoll_event	e_queue[MAX_EPOLL_EVENTS];
+
+		epoll_instance = epoll_create1(0);
+		if (epoll_instance < 0)
+			throw std::runtime_error("Failed to create epoll instance");
+
+
+		std::vector<Server>::iterator	it;
+		for (it = servers.begin(); it != servers.end(); it++)
+		{
+			SOCKET	socket_fd = (*it).get_socket_fd();
+			(*it).start_server();
+			epoll_event	event;
+			event.events = EPOLLIN;
+			event.data.fd = socket_fd;
+
+			e_servers.push_back(event);
+			int r_epollctl = epoll_ctl(epoll_instance, EPOLL_CTL_ADD, socket_fd, &event);
+			if (r_epollctl < 0)
+			{
+				perror("epoll ctl");
+				throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+			}
+		}
+
+
+		while (true)
+		{
+			event_ready = epoll_wait(epoll_instance, e_queue, MAX_EPOLL_EVENTS, -1);
+			if (event_ready < 0)
+				throw std::runtime_error("Failed on epoll_wait");
+
+			for (int i = 0; i < event_ready; i++)
+			{
+				std::cout << "ready: " << e_queue[i].events << ", for: " << e_queue[i].data.fd << std::endl;
+			}
+		}
+
 	}
 	catch(const std::exception& e)
 	{

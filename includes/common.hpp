@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:19:18 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 20:19:37 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 15:13:57 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,11 @@
 #include <vector>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/epoll.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <cerrno>
+#include <cstdio>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cstring>
