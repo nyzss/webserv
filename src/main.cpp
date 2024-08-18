@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 17:10:00 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/18 17:22:04 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ int main()
 			for (int i = 0; i < event_ready; i++)
 			{
 				std::cout << "ready: " << e_queue[i].events << ", for: " << e_queue[i].data.fd << std::endl;
+				Client	client(e_queue[i].data.fd);
+				client.get_connection();
 			}
 		}
 
