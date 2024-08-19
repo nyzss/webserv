@@ -6,11 +6,12 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 08:44:26 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/19 09:09:04 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
+#include <webserv.hpp>
 
 Client::Client() : Socket(), _server_sock(-1), _sock_len(sizeof(_data))
 {
@@ -52,12 +53,30 @@ Client::~Client()
 
 void	Client::request() const
 {
+	std::string	buffer;
+
 	if (this->_fd < 0)
 		throw std::runtime_error("trying to read request with no fd");
-	char buf[1024];
-	ssize_t bytes = recv(this->_fd, buf, 1023, 0);
+	char _buf[1024];
+	ssize_t bytes = recv(this->_fd, _buf, 1023, 0);
 	if (bytes < 0)
 		throw std::runtime_error("failed to read request: recv error");
-	buf[bytes] = '\0';
-	std::cout << buf << std::endl;
+	_buf[bytes] = '\0';
+	buffer += _buf;
+
+	std::string	first_line;
+	size_t pos = 0;
+	if ((pos = buffer.find('\n')) == std::string::npos)
+		throw std::runtime_error("no line found in request");
+	first_line = buffer.substr(0, pos);
+
+	std::vector<std::string> tokens = ws_split(first_line, ' ');
+	std::vector<std::string>::const_iterator it;
+
+	for (it = tokens.begin(); it != tokens.end(); it++)
+	{
+		std::cout << *it << std::endl;
+	}
+
+	std::cout << "------REST-------\n" << buffer << "\n";
 }
