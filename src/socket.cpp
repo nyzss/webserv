@@ -6,12 +6,11 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:05:40 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 16:05:39 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/19 09:32:41 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "socket.hpp"
-
+#include <webserv.hpp>
 
 Socket::Socket () : _fd(-1), _port(-1)
 {
