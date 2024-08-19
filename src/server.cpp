@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:32:52 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 01:05:57 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,4 +86,10 @@ void Server::connect() const
 		Client client(this->_fd);
 		client.get_connection();
 	}
+}
+
+
+bool	Server::operator==(int val)
+{
+	return _fd == val;
 }

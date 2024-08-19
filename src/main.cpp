@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 08:41:54 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 01:24:27 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,29 @@ int main()
 			for (int i = 0; i < event_ready; i++)
 			{
 				std::cout << "ready: " << e_queue[i].events << ", for: " << e_queue[i].data.fd << std::endl;
-				Client	client(e_queue[i].data.fd);
-				client.get_connection();
-				client.request();
+
+				std::vector<Server *>::const_iterator it;
+
+				for (it = servers.begin(); it != servers.end(); it++)
+				{
+					if ((*(*it)) == e_queue[i].data.fd)
+						break;
+				}
+				if (it != servers.end())
+				{
+					// its a connection to the server, handle it here
+					// the client code should go downward, no client code should be here
+					// need to restructure obviously
+					Client	client(e_queue[i].data.fd);
+					client.get_connection();
+					client.request();
+				}
+				else
+				{
+					//its client connection, do the read/write here
+					// of course check with EPOLLIN EPOLLOUT
+				}
+
 			}
 		}
 

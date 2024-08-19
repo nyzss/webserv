@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 16:06:12 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 01:05:26 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ public:
 	Server (const std::string &ip, PORT port);
 	Server (const Server &val);
 	~Server ();
+	bool	operator==(int val);
 
 // getters/setters
 public:
