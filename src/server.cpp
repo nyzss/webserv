@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 17:07:11 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/19 08:27:46 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,16 @@ Server::Server (const std::string &ip, PORT port) : Socket()
 	this->_port = port;
 	this->_ip = ip;
 	this->_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (_fd < 0)
+		throw std::runtime_error("Couldnt create socket!");
 
-	// int	opt = 1;
-	// setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-	// setsockopt(_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+	int	opt = 1;
+	int r_sockopt1 = setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	if (r_sockopt1 < 0)
+		throw std::runtime_error("Couldnt change socket options (address)!");
+	int r_sockopt2 = setsockopt(_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+	if (r_sockopt2 < 0)
+		throw std::runtime_error("Couldnt change socket options (port)!");
 
 	this->_data.sin_family = AF_INET;
 	this->_data.sin_port = htons(_port);
@@ -45,6 +51,7 @@ void	Server::start_server()
 	int r_bind = bind(this->_fd, (sockaddr *)&this->_data, sizeof(this->_data));
 	if (r_bind < 0)
 	{
+		perror("bind error");
 		log_err("Couldn't bind server.", *this);
 		throw std::runtime_error("bind error in start_server");
 	}
