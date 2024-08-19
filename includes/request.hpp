@@ -1,31 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:29:48 by okoca            ###   ########.fr       */
+/*   Created: 2024/08/19 09:16:58 by okoca             #+#    #+#             */
+/*   Updated: 2024/08/19 09:29:58 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#ifndef REQUEST_HPP
+# define REQUEST_HPP
 
 #include <common.hpp>
 
-#include "socket.hpp"
-#include "log.hpp"
-#include "server.hpp"
-#include "client.hpp"
-#include "request.hpp"
-#include "dumb_ptr.hpp"
+class Request
+{
+public:
+	enum method
+	{
+		NONE,
+		GET,
+		POST,
+		DELETE
+	};
+private:
+	method	_method;
+	std::string	_path;
 
-std::vector<std::string>	ws_split(std::string s, char delim);
-std::vector<std::string>	ws_split(std::string s, const std::string &delim);
+public:
+	Request ();
+	Request (const std::string &req);
+	Request (const Request &val);
+	~Request ();
+	Request & operator=(const Request &val);
+};
 
-extern bool	end_sig;
-
-#endif /* WEBSERV_HPP */
+#endif /* REQUEST_HPP */

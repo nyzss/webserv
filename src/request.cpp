@@ -1,31 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:29:48 by okoca            ###   ########.fr       */
+/*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
+/*   Updated: 2024/08/19 09:30:22 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
-
-#include <common.hpp>
-
-#include "socket.hpp"
-#include "log.hpp"
-#include "server.hpp"
-#include "client.hpp"
 #include "request.hpp"
-#include "dumb_ptr.hpp"
 
-std::vector<std::string>	ws_split(std::string s, char delim);
-std::vector<std::string>	ws_split(std::string s, const std::string &delim);
+Request::Request() : _method(NONE)
+{
+}
 
-extern bool	end_sig;
+Request::Request(const std::string &req)
+{
+}
 
-#endif /* WEBSERV_HPP */
+Request::Request(const Request &val)
+{
+	this->_method = val._method;
+	this->_path = val._path;
+}
+
+Request::~Request()
+{
+}
+
+Request & Request::operator=(const Request &val)
+{
+	if (this != &val)
+	{
+		this->_method = val._method;
+		this->_path = val._path;
+	}
+	return *this;
+}
