@@ -6,13 +6,15 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:31:56 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/19 14:22:00 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <webserv.hpp>
 
-Request::Request() : _method(NONE)
+const char	*Request::methods[] = {"GET", "POST", "DELETE"};
+
+Request::Request() : _method(GET)
 {
 }
 
@@ -25,12 +27,18 @@ Request::Request(const std::string &req)
 	first_line = req.substr(0, pos);
 
 	std::vector<std::string> tokens = ws_split(first_line, ' ');
-	std::vector<std::string>::const_iterator it;
 
-	for (it = tokens.begin(); it != tokens.end(); it++)
+	if (tokens.size() < 3)
+		throw std::runtime_error("request received has invalid request line");
+	for (int i = 0; i <= LAST; i++)
 	{
-		std::cout << "REQ_LINE: " << *it << std::endl;
+		if (tokens[0] == Request::methods[i])
+			this->_method = static_cast<method>(i);
 	}
+	this->_path = tokens[1];
+
+
+	std::cout << "REQUEST METHOD: " << this->_method << ", PATH: " << this->_path << std::endl;
 
 	std::cout << "------REST-------\n" << req << "\n";
 }
