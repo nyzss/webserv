@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/17 21:07:01 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/19 08:12:16 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Client::Client() : Socket(), _server_sock(-1), _sock_len(0)
 {
+	std::memset(&this->_data, 0, sizeof(this->_data));
 }
 
 Client::Client(SOCKET server_sock) : Socket(), _server_sock(server_sock)
@@ -25,10 +26,10 @@ void	Client::get_connection()
 	if (_server_sock == -1)
 		throw std::runtime_error("no server socket on client");
 
-	// this->_fd = accept(_server_sock,
-	// 	(sockaddr *)&this->_data, &this->_sock_len);
+	this->_fd = accept(_server_sock,
+		(sockaddr *)&this->_data, &this->_sock_len);
 
-	this->_fd = accept(_server_sock, NULL, NULL);
+	// this->_fd = accept(_server_sock, NULL, NULL);
 	if (this->_fd < 0)
 		throw std::runtime_error("accept error on client");
 
@@ -49,6 +50,7 @@ void	Client::get_connection()
 Client::Client(const Client &value) : Socket(value)
 {
 	this->_server_sock = value._server_sock;
+	this->_sock_len = value._sock_len;
 }
 
 Client::~Client()
