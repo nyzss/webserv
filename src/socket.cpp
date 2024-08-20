@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:05:40 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:32:41 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 21:23:21 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,18 @@ Socket::~Socket()
 		close(this->_fd);
 		this->_fd = -1;
 	}
+}
+
+void	Socket::non_blocking() const
+{
+	int	flags = fcntl(_fd, F_GETFL, 0);
+
+	if (flags < 0)
+		throw std::runtime_error("couldn't get flags of socketfd.");
+	flags |= O_NONBLOCK;
+
+	int	r_set = fcntl(_fd, F_SETFL, flags);
+
+	if (r_set < 0)
+		throw std::runtime_error("couldn't set flags of socketfd.");
 }

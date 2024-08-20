@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:36:56 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/18 16:05:35 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 21:19:55 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ public:
 	Socket	&operator=(const Socket &val);
 	Socket (const Socket &val);
 	virtual ~Socket () = 0;
+
+public:
+	void	non_blocking() const;
 };
 
 #endif /* SOCKET_HPP */
