@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 22:26:15 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 22:36:06 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ Client::Client(const Client &value) : Socket(value)
 Client::~Client()
 {}
 
-void	Client::request() const
+void	Client::request()
 {
 	std::string	buffer;
 
@@ -67,9 +67,10 @@ void	Client::request() const
 	buffer += _buf;
 
 	Request	req(buffer);
+	this->_req = req;
 }
 
-void	Client::response() const
+void	Client::response()
 {
 	std::string	buffer;
 
@@ -81,7 +82,10 @@ void	Client::response() const
 		"Content-Type: text/html\n"
 		"Content-Length: 44\n"
 		"Connection: close\n\n"
-		"<html><body><h1>Hello, World!</h1></body></html>";
+		"<html><body><h1>"
+		"Hello, World!</h1>";
+	buffer += _req.get_method_str();
+	buffer += "</body></html>";
 	int r_sd = send(_fd, buffer.c_str(), buffer.length(), 0);
 	if (r_sd < 0)
 		throw std::runtime_error("client couldn't communicate with server!");
