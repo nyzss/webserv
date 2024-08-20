@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 22:21:05 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 22:26:15 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ Client::Client() : Socket(), _server_sock(-1), _sock_len(sizeof(_data))
 
 Client::Client(SOCKET server_sock) : Socket(), _server_sock(server_sock), _sock_len(sizeof(_data))
 {
+	get_connection();
 }
 
 void	Client::get_connection()

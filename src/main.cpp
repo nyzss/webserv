@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 22:20:12 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 22:26:17 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ int main()
 		for (it = servers.begin(); it != servers.end(); it++)
 		{
 			SOCKET	socket_fd = (*(*it)).get_socketfd();
-			std::cout << "get_socket_fd: " << socket_fd << std::endl;
 			(*(*it)).start_server();
 			epoll_event	event;
 			event.events = EPOLLIN | EPOLLET;
@@ -77,7 +76,7 @@ int main()
 
 				for (it = servers.begin(); it != servers.end(); it++)
 				{
-					std::cout << "server: " << (*it)->get_socketfd() << ", epoll_queue: " << e_queue[i].data.fd << std::endl;
+					// std::cout << "server: " << (*it)->get_socketfd() << ", epoll_queue: " << e_queue[i].data.fd << std::endl;
 					if ((*(*it)) == e_queue[i].data.fd)
 						break;
 				}
@@ -87,8 +86,8 @@ int main()
 					// the client code should go downward, no client code should be here
 					// need to restructure obviously
 					Client	*client = new Client(e_queue[i].data.fd);
-					std::cout << "client fd: " << client->get_socketfd() << std::endl;
-					client->get_connection();
+					// client->get_connection();
+					// std::cout << "client fd: " << client->get_socketfd() << std::endl;
 					// client.request();
 
 					epoll_event	c_event;
@@ -151,7 +150,8 @@ int main()
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		// std::cerr << e.what() << '\n';
+		log_err(e.what());
 	}
 
 	std::vector<Server*>::iterator it;
