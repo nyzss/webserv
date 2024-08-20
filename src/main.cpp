@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 22:05:25 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 22:20:12 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ int main()
 
 					epoll_event	c_event;
 					c_event.events = EPOLLIN | EPOLLET;
-					c_event.data.fd = client->get_socketfd();
 					c_event.data.ptr = static_cast<void *>(client);
 					e_clients.push_back(c_event);
 
@@ -115,6 +114,33 @@ int main()
 						client = static_cast<Client *>(e_queue[i].data.ptr);
 
 						client->request();
+
+						epoll_event c_event = e_queue[i];
+
+						c_event.events = EPOLLOUT;
+						int r_epoll = epoll_ctl(epoll_instance, EPOLL_CTL_MOD, client->get_socketfd(), &c_event);
+						if (r_epoll < 0)
+						{
+							perror("epoll ctl");
+							throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+						}
+					}
+					else if (e_queue[i].events & EPOLLOUT)
+					{
+						Client	*client;
+
+						if (e_queue[i].data.ptr == NULL)
+							throw std::runtime_error("no client ptr found in epoll_queue");
+						client = static_cast<Client *>(e_queue[i].data.ptr);
+
+						client->response();
+						int r_epoll = epoll_ctl(epoll_instance, EPOLL_CTL_DEL, client->get_socketfd(), &(e_queue[i]));
+						if (r_epoll < 0)
+						{
+							perror("epoll ctl");
+							throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+						}
+						client->reset();
 					}
 					//its client connection, do the read/write here
 					// of course check with EPOLLIN EPOLLOUT
