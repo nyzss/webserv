@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 01:05:57 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 21:30:07 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Server::Server (const std::string &ip, PORT port) : Socket()
 	if (_fd < 0)
 		throw std::runtime_error("Couldnt create socket!");
 
+	non_blocking();
 	int	opt = 1;
 	int r_sockopt1 = setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	if (r_sockopt1 < 0)
@@ -72,11 +73,6 @@ std::string Server::get_address() const
 
 	s << this->_ip << ":" << this->_port;
 	return s.str();
-}
-
-SOCKET	Server::get_socket_fd() const
-{
-	return this->_fd;
 }
 
 void Server::connect() const

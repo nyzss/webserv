@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:05:40 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 21:23:21 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 21:44:41 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,9 @@ void	Socket::non_blocking() const
 
 	if (r_set < 0)
 		throw std::runtime_error("couldn't set flags of socketfd.");
+}
+
+SOCKET	Socket::get_socketfd() const
+{
+	return this->_fd;
 }

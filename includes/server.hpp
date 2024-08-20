@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 01:05:26 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 21:29:58 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ public:
 // getters/setters
 public:
 	std::string get_address() const;
-	SOCKET	get_socket_fd() const;
 };
 
 #endif /* SERVER_HPP */
