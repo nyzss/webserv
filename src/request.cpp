@@ -6,13 +6,13 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 14:22:00 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 22:35:53 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <webserv.hpp>
 
-const char	*Request::methods[] = {"GET", "POST", "DELETE"};
+const char	*Request::methods_arr[] = {"GET", "POST", "DELETE"};
 
 Request::Request() : _method(GET)
 {
@@ -32,7 +32,7 @@ Request::Request(const std::string &req)
 		throw std::runtime_error("request received has invalid request line");
 	for (int i = 0; i <= LAST; i++)
 	{
-		if (tokens[0] == Request::methods[i])
+		if (tokens[0] == Request::methods_arr[i])
 			this->_method = static_cast<method>(i);
 	}
 	this->_path = tokens[1];
@@ -61,4 +61,18 @@ Request & Request::operator=(const Request &val)
 		this->_path = val._path;
 	}
 	return *this;
+}
+
+
+std::string	Request::get_path() const
+{
+	return _path;
+}
+Request::method Request::get_method() const
+{
+	return _method;
+}
+std::string Request::get_method_str() const
+{
+	return Request::methods_arr[_method];
 }
