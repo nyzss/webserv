@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:32:09 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 21:26:39 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,9 @@ void	Client::get_connection()
 
 	this->_fd = accept(_server_sock,
 		(sockaddr *)&this->_data, &this->_sock_len);
-
-	// this->_fd = accept(_server_sock, NULL, NULL);
 	if (this->_fd < 0)
 		throw std::runtime_error("accept error on client");
+	non_blocking();
 
 	std::cout << "-------CLIENT DATA--------" << std::endl;
 	std::cout << "socklen_t: " << this->_sock_len << std::endl;
@@ -59,7 +58,10 @@ void	Client::request() const
 	char _buf[1024];
 	ssize_t bytes = recv(this->_fd, _buf, 1023, 0);
 	if (bytes < 0)
+	{
+		perror("recv");
 		throw std::runtime_error("failed to read request: recv error");
+	}
 	_buf[bytes] = '\0';
 	buffer += _buf;
 
