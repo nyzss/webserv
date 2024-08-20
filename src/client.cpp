@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 21:26:39 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 22:21:05 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,29 @@ void	Client::request() const
 	buffer += _buf;
 
 	Request	req(buffer);
+}
+
+void	Client::response() const
+{
+	std::string	buffer;
+
+	if (this->_fd < 0)
+		throw std::runtime_error("trying to read request with no fd");
+
+	buffer =
+		"HTTP/1.1 200 OK\n"
+		"Content-Type: text/html\n"
+		"Content-Length: 44\n"
+		"Connection: close\n\n"
+		"<html><body><h1>Hello, World!</h1></body></html>";
+	int r_sd = send(_fd, buffer.c_str(), buffer.length(), 0);
+	if (r_sd < 0)
+		throw std::runtime_error("client couldn't communicate with server!");
+}
+
+void	Client::reset()
+{
+	if (_fd != -1)
+		close(_fd);
+	_fd = -1;
 }

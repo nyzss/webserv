@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:34:53 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 08:39:34 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/20 22:20:25 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,11 @@ public:
 	~Client ();
 
 public:
+	void	reset();
+
 	void	get_connection();
 	void	request() const;
+	void	response() const;
 };
 
 #endif /* CLIENT_HPP */
