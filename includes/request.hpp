@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:16:58 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 18:00:37 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 18:04:57 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@ private:
 	method	_method;
 	std::string	_path;
 	static const char *_methods_arr[];
+	static const std::string	separator;
 	size_t	_needed_size;
 	size_t	_current_size;
+	bool	_finished;
 
 public:
 	Request ();
@@ -42,6 +44,7 @@ public:
 	std::string	get_path() const;
 	method get_method() const;
 	std::string get_method_str() const;
+	bool get_finished() const;
 };
 
 #endif /* REQUEST_HPP */
