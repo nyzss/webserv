@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 18:59:02 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 21:49:48 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,26 +21,119 @@ Request::Request()
 	_needed_size = 0;
 	_current_size = 0;
 	_finished = false;
+	_header_finished = false;
 	_content_length = 0;
-
+	_fd = -1;
 }
 
-Request::Request(const std::string &req)
+Request::Request(SOCKET sockfd)
 {
-	this->_finished = false;
-	this->_current_size = 0;
-	this->_needed_size = 0;
-	this->_content_length = (0);
+	_fd = sockfd;
+	_finished = false;
+	_header_finished = false;
+	_current_size = 0;
+	_needed_size = 0;
+	_content_length = (0);
+}
 
+Request::Request(const Request &val)
+{
+	*this = val;
+}
 
+Request & Request::operator=(const Request &val)
+{
+	if (this != &val)
+	{
+		this->_method = val._method;
+		this->_path = val._path;
+		this->_current_size = val._current_size;
+		this->_needed_size = val._needed_size;
+		this->_finished = val._finished;
+		this->_header_finished = val._header_finished;
+		this->_buffer = val._buffer;
+		this->_fd = val._fd;
+		this->_content_length = val._content_length;
+		this->_content_type = val._content_type;
+	}
+	return *this;
+}
+
+Request::~Request()
+{
+}
+
+void	Request::receive()
+{
+	if (this->_fd < 0)
+		throw std::runtime_error("trying to read request with no fd");
+	char _buf[DEFAULT_READ];
+	ssize_t bytes = recv(this->_fd, _buf, (DEFAULT_READ - 1), 0);
+	if (bytes < 0)
+	{
+		perror("recv");
+		throw std::runtime_error("failed to read request: recv error");
+	}
+	_buf[bytes] = '\0';
+	_buffer += _buf;
+}
+
+void	Request::check_buffer()
+{
+	size_t header_end_pos = 0;
+	if ((header_end_pos = _buffer.find(separator)) != std::string::npos)
+	{
+		_header = _buffer.substr(0, header_end_pos);
+		_body = _buffer.substr(header_end_pos + separator.length());
+
+		std::cout << "\nheader_len: " << _header.length() << "\n";
+		std::cout << "-------------------\n "<< _header << "\n--------------------\n";
+		std::cout << "\nbody_len: " << _body.length() << "\n";
+		std::cout << "-------------------\n "<< _body << "\n--------------------\n";
+	}
+	if (header_end_pos != std::string::npos)
+		_header_finished = true;
+
+	// if (_content_length != body.length())
+	// {
+	// 	std::cout << "body has not been read fully" << std::endl;
+	// }
+	// else if (header_end_pos == std::string::npos)
+	// {
+	// 	std::cout << "request header has not been read fully" << std::endl;
+	// }
+	// else
+	// {
+	// 	std::cout << "Read fully!" << std::endl;
+	// 	_finished = true;
+	// }
+}
+
+std::string	Request::find_field(const std::string &field_name)
+{
+	size_t	field_pos = _buffer.find(field_name);
+	if (field_pos != std::string::npos)
+	{
+		std::string	field;
+
+		field_pos += field_name.length();
+		size_t field_end = _buffer.find("\r\n", field_pos);
+		field = _buffer.substr(field_pos, field_end - field_pos);
+		std::cout << field_name << ": " << "[" << field << "]" << std::endl;
+		return field;
+	}
+	return "n/a";
+}
+
+void	Request::handle_header()
+{
 	std::string	first_line;
 	size_t pos = 0;
-	if ((pos = req.find('\n')) == std::string::npos)
+	if ((pos = _buffer.find('\n')) == std::string::npos)
 		throw std::runtime_error("no line found in request");
-	first_line = req.substr(0, pos);
 
+	first_line = _buffer.substr(0, pos);
 	std::vector<std::string> tokens = ws_split(first_line, ' ');
-
 	if (tokens.size() < 3)
 		throw std::runtime_error("request received has invalid request line");
 	for (int i = 0; i <= LAST; i++)
@@ -55,99 +148,35 @@ Request::Request(const std::string &req)
 
 	// std::cout << "------REST-------\n" << req << "\n";
 
-	size_t	content_type_pos = req.find(CONTENT_TYPE);
-	if (content_type_pos != std::string::npos)
-	{
-		content_type_pos += strlen(CONTENT_TYPE);
-		size_t content_type_end = req.find("\r\n", content_type_pos);
-		_content_type = req.substr(content_type_pos, content_type_end - content_type_pos);
-		std::cout << "content_type: " << "[" << _content_type << "]" << std::endl;
-	}
-	else
-		std::cout << "no content_type :(" << std::endl;
+	_content_type = find_field(CONTENT_TYPE);
 
+	_content_length = std::atoll(find_field(CONTENT_LENGTH).c_str());
 
-	size_t	content_len_pos = req.find(CONTENT_LENGTH);
-	if (content_len_pos != std::string::npos)
-	{
-		content_len_pos += strlen(CONTENT_LENGTH);
-		size_t content_len_end = req.find("\r\n", content_len_pos);
-		std::string tmp = req.substr(content_len_pos, content_len_end - content_len_pos);
-
-		_content_length = std::atoll(tmp.c_str());
-		std::cout << "content_len: " << "[" << _content_length << "]" << std::endl;
-	}
-	else
-		std::cout << "no content_len :(" << std::endl;
-
-	size_t header_end_pos = 0;
-	// now if this condition is not satisfied it means that we have to read everything yet,
-	// do some kind of checks for the followings:
-	/*
-	* if header has not been read fully
-	* if body has not been read fully
-
-	* or if both have been read fully
-	*/
-
-	// if this condition is true then it means we have found the end of the header
-	std::string	header;
-	std::string	body;
-	if ((header_end_pos = req.find(separator)) != std::string::npos)
-	{
-		header = req.substr(0, header_end_pos);
-		body = req.substr(header_end_pos + separator.length());
-
-		std::cout << "\nheader_len: " << header.length() << "\n";
-		std::cout << "-------------------\n "<< header << "\n--------------------\n";
-		std::cout << "\nbody_len: " << body.length() << "\n";
-		std::cout << "-------------------\n "<< body << "\n--------------------\n";
-	}
-
-	if (_content_length != body.length())
-	{
-		std::cout << "body has not been read fully" << std::endl;
-	}
-	else if (header_end_pos == std::string::npos)
-	{
-		std::cout << "request header has not been read fully" << std::endl;
-	}
-	else
-		std::cout << "Read fully!" << std::endl;
-
-	// do not do anything as long as header is not read fully, do the check first
-	// if it has been read fully then process the data
-	this->_finished = true;
+	// if no content_length and if read the totality of header,
+	// then we know we have finished reading.
+	if (_content_length == 0)
+		this->_finished = true;
 }
 
-Request::Request(const Request &val)
+void Request::handle_body()
 {
-	this->_method = val._method;
-	this->_path = val._path;
-	this->_current_size = val._current_size;
-	this->_needed_size = val._needed_size;
-	this->_finished = val._finished;
-	this->_content_length = val._content_length;
+	if (_body.length() == _content_length)
+		_finished = true;
 }
 
-Request::~Request()
+void	Request::read()
 {
-}
-
-Request & Request::operator=(const Request &val)
-{
-	if (this != &val)
+	receive();
+	check_buffer();
+	if (_header_finished == true)
 	{
-		this->_method = val._method;
-		this->_path = val._path;
-		this->_current_size = val._current_size;
-		this->_needed_size = val._needed_size;
-		this->_finished = val._finished;
-		this->_content_length = val._content_length;
+		handle_header();
+		if (_finished == true)
+			return ;
+		handle_body();
+		//handle check for body
 	}
-	return *this;
 }
-
 
 std::string	Request::get_path() const
 {
