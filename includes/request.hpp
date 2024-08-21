@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:16:58 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 18:04:57 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 18:21:53y okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 # define REQUEST_HPP
 
 #include <common.hpp>
+
+# define CONTENT_TYPE "Content-Type: "
+# define CONTENT_LENGTH "Content-Length: "
 
 class Request
 {
@@ -27,13 +30,17 @@ public:
 		LAST = DELETE
 	};
 private:
-	method	_method;
-	std::string	_path;
 	static const char *_methods_arr[];
 	static const std::string	separator;
 	size_t	_needed_size;
 	size_t	_current_size;
 	bool	_finished;
+
+private:
+	method		_method;
+	size_t		_content_length;
+	std::string	_path;
+	std::string	_content_type;
 
 public:
 	Request ();
