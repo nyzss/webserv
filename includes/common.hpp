@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:19:18 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 18:52:40 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 22:12:47 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 #include <unistd.h>
 #include <cstdlib>
 #include <sys/socket.h>

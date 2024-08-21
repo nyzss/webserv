@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 18:32:56 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 22:14:08 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	handle_sigint(int sig)
 int main()
 {
 	std::vector<Server*> servers;
-	std::vector<epoll_event>	e_clients;
+	std::set<Client *> e_clients;
 	int	epoll_instance = -1;
 	try
 	{
@@ -70,30 +70,21 @@ int main()
 
 			for (int i = 0; i < event_ready; i++)
 			{
-				// std::cout << "ready: " << e_queue[i].events << ", for: " << e_queue[i].data.fd << std::endl;
-
 				std::vector<Server *>::const_iterator it;
 
 				for (it = servers.begin(); it != servers.end(); it++)
 				{
-					// std::cout << "server: " << (*it)->get_socketfd() << ", epoll_queue: " << e_queue[i].data.fd << std::endl;
 					if ((*(*it)) == e_queue[i].data.fd)
 						break;
 				}
 				if (it != servers.end())
 				{
-					// its a connection to the server, handle it here
-					// the client code should go downward, no client code should be here
-					// need to restructure obviously
 					Client	*client = new Client(e_queue[i].data.fd);
-					// client->get_connection();
-					// std::cout << "client fd: " << client->get_socketfd() << std::endl;
-					// client.request();
+	 				e_clients.insert(client);
 
 					epoll_event	c_event;
 					c_event.events = EPOLLIN | EPOLLET;
 					c_event.data.ptr = static_cast<void *>(client);
-					e_clients.push_back(c_event);
 
 					int r_epoll = epoll_ctl(epoll_instance, EPOLL_CTL_ADD, client->get_socketfd(), &c_event);
 					if (r_epoll < 0)
@@ -142,10 +133,9 @@ int main()
 							perror("epoll ctl");
 							throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
 						}
-						client->reset();
+						delete client;
+						e_clients.erase(client);
 					}
-					//its client connection, do the read/write here
-					// of course check with EPOLLIN EPOLLOUT
 				}
 			}
 		}
@@ -153,7 +143,6 @@ int main()
 	}
 	catch(const std::exception& e)
 	{
-		// std::cerr << e.what() << '\n';
 		log_err(e.what());
 	}
 
@@ -161,42 +150,10 @@ int main()
 	for (it = servers.begin(); it != servers.end(); it++)
 		delete (*it);
 
-	std::vector<epoll_event>::iterator eit;
+	std::set<Client *>::const_iterator eit;
 	for (eit = e_clients.begin(); eit != e_clients.end(); eit++)
-	{
-		Client *ptr = static_cast<Client*>((*eit).data.ptr);
-		if (ptr != NULL)
-			delete ptr;
-	}
+		delete (*eit);
 
 	if (epoll_instance != -1)
 		close(epoll_instance);
 }
-
-// int main()
-// {
-// 	std::vector<Server*> servers;
-// 	try
-// 	{
-// 		signal(SIGINT, handle_sigint);
-
-// 		servers.push_back(new Server("0.0.0.0", 8080));
-// 		servers.push_back(new Server("0.0.0.0", 8081));
-// 		servers.push_back(new Server("0.0.0.0", 8082));
-
-// 		std::vector<Server*>::iterator it;
-// 		for (it = servers.begin(); it != servers.end(); it++)
-// 		{
-// 			std::cout << "ip: " << (*(*it)).get_address() << std::endl;
-// 			std::cout << "fd: " << (*(*it)).get_socket_fd() << std::endl;
-// 		}
-// 		signal(SIGINT, SIG_DFL);
-// 	}
-// 	catch(const std::exception& e)
-// 	{
-// 		std::cerr << e.what() << '\n';
-// 	}
-// 	std::vector<Server*>::iterator it;
-// 	for (it = servers.begin(); it != servers.end(); it++)
-// 		delete (*it);
-// }
