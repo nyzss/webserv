@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 22:35:53 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 17:48:15 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,27 @@ Request::Request(const std::string &req)
 	std::cout << "REQUEST METHOD: " << this->_method << ", PATH: " << this->_path << std::endl;
 
 	std::cout << "------REST-------\n" << req << "\n";
+
+	std::string separator = "\r\n\r\n";
+	size_t header_end_pos = 0;
+	// now if this condition is not satisfied it means that we have to read everything yet,
+	// do some kind of checks for the followings:
+	/*
+	* if header has not been read fully
+	* if body has not been read fully
+
+	* or if both have been read fully
+	*/
+	if ((header_end_pos = req.find(separator)) != std::string::npos)
+	{
+		std::string	header = req.substr(0, header_end_pos);
+		std::string	body = req.substr(header_end_pos + separator.length());
+
+		std::cout << "header_len: " << header.length() << "\n";
+		std::cout << "---------\n "<< header << "\n-----------\n";
+		std::cout << "body_len: " << body.length() << "\n";
+		std::cout << "---------\n "<< body << "\n-----------\n";
+	}
 }
 
 Request::Request(const Request &val)
