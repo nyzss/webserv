@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 22:26:17 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 18:32:56 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int main()
 
 			for (int i = 0; i < event_ready; i++)
 			{
-				std::cout << "ready: " << e_queue[i].events << ", for: " << e_queue[i].data.fd << std::endl;
+				// std::cout << "ready: " << e_queue[i].events << ", for: " << e_queue[i].data.fd << std::endl;
 
 				std::vector<Server *>::const_iterator it;
 
@@ -115,8 +115,11 @@ int main()
 						client->request();
 
 						epoll_event c_event = e_queue[i];
+						if (client->get_finished() == false)
+							c_event.events = EPOLLIN;
+						else
+							c_event.events = EPOLLOUT;
 
-						c_event.events = EPOLLOUT;
 						int r_epoll = epoll_ctl(epoll_instance, EPOLL_CTL_MOD, client->get_socketfd(), &c_event);
 						if (r_epoll < 0)
 						{
