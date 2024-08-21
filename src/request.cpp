@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 18:40:36 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/21 18:59:02 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,10 @@ Request::Request(const std::string &req)
 	{
 		content_len_pos += strlen(CONTENT_LENGTH);
 		size_t content_len_end = req.find("\r\n", content_len_pos);
-		_content_type = req.substr(content_len_pos, content_len_end - content_len_pos);
-		std::cout << "content_len: " << "[" << _content_type << "]" << std::endl;
+		std::string tmp = req.substr(content_len_pos, content_len_end - content_len_pos);
+
+		_content_length = std::atoll(tmp.c_str());
+		std::cout << "content_len: " << "[" << _content_length << "]" << std::endl;
 	}
 	else
 		std::cout << "no content_len :(" << std::endl;
@@ -89,16 +91,32 @@ Request::Request(const std::string &req)
 	*/
 
 	// if this condition is true then it means we have found the end of the header
+	std::string	header;
+	std::string	body;
 	if ((header_end_pos = req.find(separator)) != std::string::npos)
 	{
-		std::string	header = req.substr(0, header_end_pos);
-		std::string	body = req.substr(header_end_pos + separator.length());
+		header = req.substr(0, header_end_pos);
+		body = req.substr(header_end_pos + separator.length());
 
-		std::cout << "header_len: " << header.length() << "\n";
-		std::cout << "---------\n "<< header << "\n-----------\n";
-		std::cout << "body_len: " << body.length() << "\n";
-		std::cout << "---------\n "<< body << "\n-----------\n";
+		std::cout << "\nheader_len: " << header.length() << "\n";
+		std::cout << "-------------------\n "<< header << "\n--------------------\n";
+		std::cout << "\nbody_len: " << body.length() << "\n";
+		std::cout << "-------------------\n "<< body << "\n--------------------\n";
 	}
+
+	if (_content_length != body.length())
+	{
+		std::cout << "body has not been read fully" << std::endl;
+	}
+	else if (header_end_pos == std::string::npos)
+	{
+		std::cout << "request header has not been read fully" << std::endl;
+	}
+	else
+		std::cout << "Read fully!" << std::endl;
+
+	// do not do anything as long as header is not read fully, do the check first
+	// if it has been read fully then process the data
 	this->_finished = true;
 }
 
