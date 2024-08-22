@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:06:21 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 15:26:55 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/22 15:47:39by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ Response & Response::operator=(const Response &val)
 	if (this != &val)
 	{
 		this->_fd = val._fd;
+		this->_req = val._req;
 	}
 	return *this;
 }
@@ -54,19 +55,28 @@ void Response::add_body()
 
 void Response::build_body()
 {
-	_body = "<html><body><h1>"
-		"Hello, World!</h1>";
-	_body += _req.get_method_str();
-	_body += "<h1>this is a custom body lmao</h1>";
-	_body += _req.get_path();
-	_body += "</body></html>";
+	std::string prefix = "example/";
+	std::string	file_path(prefix);
+
+	if (_req.get_path() == "/")
+		file_path += "index.html";
+	else
+		file_path += _req.get_path();
+
+	std::ifstream	file(file_path.c_str());
+	if (!file)
+		throw std::runtime_error("couldn't open response file");
+
+	std::string	line;
+	while (std::getline(file, line))
+		_body += line;
 }
 
 void Response::content_type()
 {
 	_content_type = "Content-Type: ";
 	std::string	path = _req.get_path();
-	std::transform(path.begin(), path.end(), path.begin(), ::tolower);
+	// std::transform(_req.get_path().begin(), _req.get_path().end(), path.begin(), ::tolower);
 
 	if (path == "/")
 	{
@@ -109,6 +119,9 @@ void Response::builder()
 	add_line(_content_len);
 	add_line("Connection: close");
 	add_body();
+
+	std::cout << "__buffer: \n" << _buffer;
+	std::cout << "__body_len: " << _body.length();
 }
 
 void Response::send()
