@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 21:14:45 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/22 14:26:54 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,44 +53,13 @@ Client::~Client()
 
 void	Client::request()
 {
-	// std::string	buffer;
-
-	// if (this->_fd < 0)
-	// 	throw std::runtime_error("trying to read request with no fd");
-	// char _buf[1024];
-	// ssize_t bytes = recv(this->_fd, _buf, 1023, 0);
-	// if (bytes < 0)
-	// {
-	// 	perror("recv");
-	// 	throw std::runtime_error("failed to read request: recv error");
-	// }
-	// _buf[bytes] = '\0';
-	// buffer += _buf;
-
 	_req.read();
-
-	// Request	req(buffer); this->_req = req;
 }
 
 void	Client::response()
 {
-	std::string	buffer;
-
-	if (this->_fd < 0)
-		throw std::runtime_error("trying to read request with no fd");
-
-	buffer =
-		"HTTP/1.1 200 OK\n"
-		"Content-Type: text/html\n"
-		"Content-Length: 44\n"
-		"Connection: close\n\n"
-		"<html><body><h1>"
-		"Hello, World!</h1>";
-	buffer += _req.get_method_str();
-	buffer += "</body></html>";
-	int r_sd = send(_fd, buffer.c_str(), buffer.length(), 0);
-	if (r_sd < 0)
-		throw std::runtime_error("client couldn't communicate with server!");
+	_res = Response(_req);
+	_res.send();
 }
 
 void	Client::reset()
