@@ -71,6 +71,7 @@ public:
 	method get_method() const;
 	std::string get_method_str() const;
 	bool get_finished() const;
+	SOCKET	get_sockfd() const;
 };
 
 #endif /* REQUEST_HPP */

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/21 21:49:48 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/22 14:14:42 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,20 +93,6 @@ void	Request::check_buffer()
 	}
 	if (header_end_pos != std::string::npos)
 		_header_finished = true;
-
-	// if (_content_length != body.length())
-	// {
-	// 	std::cout << "body has not been read fully" << std::endl;
-	// }
-	// else if (header_end_pos == std::string::npos)
-	// {
-	// 	std::cout << "request header has not been read fully" << std::endl;
-	// }
-	// else
-	// {
-	// 	std::cout << "Read fully!" << std::endl;
-	// 	_finished = true;
-	// }
 }
 
 std::string	Request::find_field(const std::string &field_name)
@@ -196,4 +182,9 @@ std::string Request::get_method_str() const
 bool Request::get_finished() const
 {
 	return _finished;
+}
+
+SOCKET	Request::get_sockfd() const
+{
+	return _fd;
 }

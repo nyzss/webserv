@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:29:48 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/22 14:13:16 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "server.hpp"
 #include "client.hpp"
 #include "request.hpp"
+#include "response.hpp"
 #include "dumb_ptr.hpp"
 
 std::vector<std::string>	ws_split(std::string s, char delim);
