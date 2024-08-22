@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:36:42 by okoca            ###   ########.fr       */
+/*   Created: 2024/08/22 14:36:08 by okoca             #+#    #+#             */
+/*   Updated: 2024/08/22 14:38:07 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#ifndef UTILS_HPP
+# define UTILS_HPP
 
-#include <common.hpp>
+# include <common.hpp>
 
-#include "socket.hpp"
-#include "log.hpp"
-#include "server.hpp"
-#include "client.hpp"
-#include "request.hpp"
-#include "response.hpp"
-#include "dumb_ptr.hpp"
+std::vector<std::string>	ws_split(std::string s, char delim);
+std::vector<std::string>	ws_split(std::string s, const std::string &delim);
 
-#include "utils.hpp"
+template <typename T>
+std::string	to_string(const T& val)
+{
+	std::ostringstream	s;
 
-extern bool	end_sig;
+	s << val;
+	return s.str();
+}
 
-#endif /* WEBSERV_HPP */
+#endif /* UTILS_HPP */
