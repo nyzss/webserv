@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:49:48 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/22 15:05:56 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ public:
 	void send();
 	void add_line(const std::string &line);
 	void add_body();
+	void content_type();
 	void build_body();
 
 public:
