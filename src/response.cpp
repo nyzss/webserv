@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:06:21 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:51:05 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/22 14:52:59 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,12 @@ Response::~Response()
 
 void Response::add_line(const std::string &line)
 {
-	_buffer += line + "\n";
+	_buffer += line + "\r\n";
 }
 
 void Response::add_body()
 {
-	_buffer += "\n" + _body;
+	_buffer += "\r\n" + _body;
 }
 
 void Response::build_body()
