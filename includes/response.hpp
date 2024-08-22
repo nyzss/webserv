@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:22:19 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/22 14:49:48 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,13 @@
 class Response
 {
 private:
-	SOCKET	_fd;
-	Request	_req;
+	SOCKET		_fd;
+	Request		_req;
+	std::string	_buffer;
+
+	std::string	_body;
+	std::string	_content_type;
+	std::string	_content_len;
 
 public:
 	Response ();
@@ -30,7 +35,11 @@ public:
 	Response & operator=(const Response &val);
 
 public:
+	void builder();
 	void send();
+	void add_line(const std::string &line);
+	void add_body();
+	void build_body();
 
 public:
 	Response (const Request &req);
