@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 11:29:15 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 14:05:19 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ public:
 	void build_body();
 	void check_resource();
 	void read_file();
+	void end_line();
 
 public:
 	Response (const Request &req);

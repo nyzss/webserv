@@ -61,14 +61,15 @@ Response::~Response()
 {
 }
 
-void Response::add_line(const std::string &line)
+void Response::end_line()
 {
-	_buffer += line + "\r\n";
+	_buffer += "\r\n";
 }
 
-void Response::add_body()
+void Response::add_line(const std::string &line)
 {
-	_buffer += "\r\n" + _body;
+	_buffer += line;
+	end_line();
 }
 
 void Response::build_body()
@@ -140,7 +141,7 @@ void Response::builder()
 	_content_len += to_string(_raw_size);
 	add_line(_content_len);
 	add_line("Connection: close");
-	add_line("\r\n");
+	end_line();
 
 	_final.reserve(_buffer.size() + _raw_size);
 
