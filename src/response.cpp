@@ -84,7 +84,7 @@ void Response::content_type()
 	_content_type = "Content-Type: ";
 	std::string	path = _req.get_path();
 
-	if (path == "/")
+	if (path == "/" || !_resource_exists)
 	{
 		_content_type += "text/html";
 		return ;
@@ -93,7 +93,7 @@ void Response::content_type()
 	size_t pos = path.find_last_of('.');
 	if (pos == std::string::npos)
 	{
-		_content_type += "application/octet-stream";
+		_content_type += "text/html";
 		return ;
 	}
 	std::string	ext = path.substr(pos + 1);
@@ -136,8 +136,8 @@ void Response::builder()
 	add_line("Connection: close");
 	add_body();
 
-	std::cout << "__buffer: \n" << _buffer;
-	std::cout << "__body_len: " << _body.length();
+	std::cout << "RESPONSE: \n" << _buffer << "\n";
+	std::cout << "__body_len: " << _body.length() << std::endl;
 }
 
 void Response::send()
