@@ -41,11 +41,6 @@ Response & Response::operator=(const Response &val)
 		this->_req = val._req;
 		this->_buffer = val._buffer;
 
-		this->_status_line = val._status_line;
-		this->_body = val._body;
-		this->_content_type = val._content_type;
-		this->_content_len = val._content_len;
-
 		this->_prefix = val._prefix;
 		this->_resource_exists = val._resource_exists;
 
@@ -128,15 +123,11 @@ void Response::builder()
 	add_line(init_content_type());
 	add_line(init_content_len());
 	add_line(init_connection());
-
 	end_line();
 
 	_final.reserve(_buffer.size() + _raw_size);
-
 	_final.insert(_final.end(), _buffer.begin(), _buffer.end());
 	_final.insert(_final.end(), _raw_data.begin(), _raw_data.end());
-
-	// debug();
 }
 
 void Response::send()
@@ -154,6 +145,7 @@ void Response::read_file(std::ifstream &file)
 		_raw_size = _raw_data.size();
 		return ;
 	}
+
 	_raw_size = file.tellg();
 	file.seekg(0, std::ios::beg);
 	_raw_data.resize(_raw_size);
@@ -174,8 +166,6 @@ void Response::init_resource()
 
 	file.open(filename.c_str(), std::ios::binary | std::ios::ate);
 	_resource_exists = file.good();
-	if (!_resource_exists)
-		return ;
 	read_file(file);
 }
 
