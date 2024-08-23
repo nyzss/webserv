@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 15:33:56 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 16:58:31 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ private:
 	void init_resource();
 	void builder();
 	void send();
-	void debug();
 	void combine();
 
 private:
@@ -54,6 +53,7 @@ private:
 	std::string	init_content_len() const;
 	std::string	init_connection() const;
 
+	void debug() const;
 };
 
 #endif /* RESPONSE_HPP */

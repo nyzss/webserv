@@ -174,7 +174,7 @@ void Response::init_resource()
 	read_file(file);
 }
 
-void Response::debug()
+void Response::debug() const
 {
 	std::string	partial(_raw_data.begin(), _raw_data.end());
 	std::cout << "---------------\nRESPONSE HEADER: \n" << _buffer << "\n";
