@@ -22,6 +22,8 @@ Response::Response(const Request &req)
 	if (_fd < 0)
 		throw std::runtime_error("response object initialised with invalid fd");
 	this->_req = req;
+	_prefix = "example/";
+	check_resource();
 }
 
 Response::Response(const Response &val)
@@ -35,6 +37,17 @@ Response & Response::operator=(const Response &val)
 	{
 		this->_fd = val._fd;
 		this->_req = val._req;
+		this->_buffer = val._buffer;
+
+		this->_status_line = val._status_line;
+		this->_body = val._body;
+		this->_content_type = val._content_type;
+		this->_content_len = val._content_len;
+
+		this->_prefix = val._prefix;
+		this->_filename = val._filename;
+		this->_file.open(val._filename.c_str());
+		this->_resource_exists = val._resource_exists;
 	}
 	return *this;
 }
@@ -55,28 +68,21 @@ void Response::add_body()
 
 void Response::build_body()
 {
-	std::string prefix = "example/";
-	std::string	file_path(prefix);
 
-	if (_req.get_path() == "/")
-		file_path += "index.html";
+	if (!_resource_exists)
+		_body = HTML_NOT_FOUND;
 	else
-		file_path += _req.get_path();
-
-	std::ifstream	file(file_path.c_str());
-	if (!file)
-		throw std::runtime_error("couldn't open response file");
-
-	std::string	line;
-	while (std::getline(file, line))
-		_body += line;
+	{
+		std::string	line;
+		while (std::getline(_file, line))
+			_body += line;
+	}
 }
 
 void Response::content_type()
 {
 	_content_type = "Content-Type: ";
 	std::string	path = _req.get_path();
-	// std::transform(_req.get_path().begin(), _req.get_path().end(), path.begin(), ::tolower);
 
 	if (path == "/")
 	{
@@ -105,14 +111,24 @@ void Response::content_type()
 		_content_type += "image/gif";
 }
 
+void	Response::status_line()
+{
+	_status_line = "HTTP/1.1 ";
+	if (!_resource_exists)
+		_status_line += STATUS.at(NOT_FOUND);
+	else
+		_status_line += STATUS.at(OK);
+}
+
 void Response::builder()
 {
-	add_line("HTTP/1.1 200 OK");
+	status_line();
+	add_line(_status_line);
+
+	build_body();
 
 	content_type();
 	add_line(_content_type);
-
-	build_body();
 
 	_content_len = "Content-Length: ";
 	_content_len += to_string(_body.length());
@@ -134,3 +150,16 @@ void Response::send()
 		throw std::runtime_error("client couldn't communicate with server!");
 }
 
+void Response::check_resource()
+{
+	_filename = _prefix;
+
+	if (_req.get_path() == "/")
+		_filename += "index.html";
+	else
+		_filename += _req.get_path();
+
+	_file.open(_filename.c_str());
+
+	_resource_exists = _file.good();
+}
