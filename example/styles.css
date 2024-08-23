@@ -17,3 +17,9 @@ div {
   margin-left: 25px;
   background-color: white;
 }
+
+.here {
+  width: 400px;
+  height: 300px;
+  object-fit: cover; /* Optional: Ensures the image fills the dimensions without distortion */
+}
