@@ -17,8 +17,6 @@
 #include <common.hpp>
 
 # define DEFAULT_READ 1024
-# define CONTENT_TYPE "Content-Type: "
-# define CONTENT_LENGTH "Content-Length: "
 
 class Request
 {

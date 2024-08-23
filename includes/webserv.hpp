@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:36:42 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 14:27:20 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include "request.hpp"
 #include "response.hpp"
 #include "dumb_ptr.hpp"
+
+#include "defaults.hpp"
 
 #include "utils.hpp"
 

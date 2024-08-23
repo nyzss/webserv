@@ -58,8 +58,7 @@ Response & Response::operator=(const Response &val)
 }
 
 Response::~Response()
-{
-}
+{}
 
 void Response::end_line()
 {
@@ -70,19 +69,6 @@ void Response::add_line(const std::string &line)
 {
 	_buffer += line;
 	end_line();
-}
-
-void Response::build_body()
-{
-
-	if (!_resource_exists)
-		_body = HTML_NOT_FOUND;
-	else
-	{
-		std::string	line;
-		while (std::getline(_file, line))
-			_body += line;
-	}
 }
 
 void Response::content_type()
@@ -102,6 +88,7 @@ void Response::content_type()
 		_content_type += "text/html";
 		return ;
 	}
+
 	std::string	ext = path.substr(pos + 1);
 	if (ext == "html")
 		_content_type += "text/html";
@@ -121,9 +108,9 @@ void	Response::status_line()
 {
 	_status_line = "HTTP/1.1 ";
 	if (!_resource_exists)
-		_status_line += STATUS.at(NOT_FOUND);
+		_status_line += Defaults::Status()[NOT_FOUND];
 	else
-		_status_line += STATUS.at(OK);
+		_status_line += Defaults::Status()[OK];
 }
 
 void Response::builder()
@@ -131,7 +118,6 @@ void Response::builder()
 	status_line();
 	add_line(_status_line);
 
-	// build_body();
 	read_file();
 
 	content_type();
@@ -171,7 +157,7 @@ void Response::read_file()
 {
 	if (!_resource_exists)
 	{
-		_raw_data.insert(_raw_data.end(), HTML_NOT_FOUND.begin(), HTML_NOT_FOUND.end());
+		_raw_data.insert(_raw_data.end(), Defaults::html_not_found.begin(), Defaults::html_not_found.end());
 		_raw_size = _raw_data.size();
 		return ;
 	}

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:14:42 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 14:50:02 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,9 @@ void	Request::handle_header()
 
 	// std::cout << "------REST-------\n" << req << "\n";
 
-	_content_type = find_field(CONTENT_TYPE);
+	_content_type = find_field(Defaults::Fields()[CONTENT_TYPE]);
 
-	_content_length = std::atoll(find_field(CONTENT_LENGTH).c_str());
+	_content_length = std::atoll(find_field(Defaults::Fields()[CONTENT_TYPE]).c_str());
 
 	// if no content_length and if read the totality of header,
 	// then we know we have finished reading.
