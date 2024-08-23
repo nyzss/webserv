@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 14:26:45 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 15:21:31 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ private:
 	std::string	_content_len;
 
 	std::string				_prefix;
-	std::ifstream			_file;
-	std::string				_filename;
 	std::vector<uint8_t>	_raw_data;
 	std::streampos			_raw_size;
 	std::vector<uint8_t>	_final;
@@ -43,15 +41,21 @@ public:
 	~Response ();
 	Response & operator=(const Response &val);
 
-public:
+private:
 	void builder();
 	void send();
 	void add_line(const std::string &line);
 	void content_type();
-	void status_line();
-	void check_resource();
-	void read_file();
+	void init_resource();
+	void read_file(std::ifstream &file);
 	void end_line();
+	void debug();
+
+private:
+	std::string	init_status_line() const;
+	std::string init_content_type() const;
+	std::string	init_content_len() const;
+	std::string	init_connection() const;
 
 public:
 	Response (const Request &req);
