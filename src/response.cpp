@@ -24,6 +24,7 @@ Response::Response(const Request &req)
 	this->_req = req;
 	_prefix = "example/";
 	check_resource();
+	send();
 }
 
 Response::Response(const Response &val)
@@ -48,6 +49,10 @@ Response & Response::operator=(const Response &val)
 		this->_filename = val._filename;
 		this->_file.open(val._filename.c_str());
 		this->_resource_exists = val._resource_exists;
+
+		this->_raw_data = val._raw_data;
+		this->_raw_size = val._raw_size;
+		this->_final = val._final;
 	}
 	return *this;
 }
@@ -125,19 +130,25 @@ void Response::builder()
 	status_line();
 	add_line(_status_line);
 
-	build_body();
+	// build_body();
+	read_file();
 
 	content_type();
 	add_line(_content_type);
 
 	_content_len = "Content-Length: ";
-	_content_len += to_string(_body.length());
+	_content_len += to_string(_raw_size);
 	add_line(_content_len);
 	add_line("Connection: close");
-	add_body();
+	add_line("\r\n");
 
-	std::cout << "RESPONSE: \n" << _buffer << "\n";
-	std::cout << "__body_len: " << _body.length() << std::endl;
+	_final.reserve(_buffer.size() + _raw_size);
+
+	_final.insert(_final.end(), _buffer.begin(), _buffer.end());
+	_final.insert(_final.end(), _raw_data.begin(), _raw_data.end());
+
+	std::string	partial(_final.begin(), _final.end());
+	std::cout << "---------------\nRESPONSE: \n" << partial << "\n";
 }
 
 void Response::send()
@@ -145,9 +156,26 @@ void Response::send()
 	if (_fd < 0)
 		throw std::runtime_error("response object initialised with invalid fd");
 	builder();
-	int r_sd = ::send(_fd, _buffer.c_str(), _buffer.length(), 0);
+	int r_sd = ::send(_fd, _final.data(), _final.size(), 0);
 	if (r_sd < 0)
 		throw std::runtime_error("client couldn't communicate with server!");
+}
+
+void Response::read_file()
+{
+	if (!_resource_exists)
+	{
+		_raw_data.insert(_raw_data.end(), HTML_NOT_FOUND.begin(), HTML_NOT_FOUND.end());
+		_raw_size = _raw_data.size();
+		return ;
+	}
+	_raw_size = _file.tellg();
+	_file.seekg(0, std::ios::beg);
+	_raw_data.reserve(_raw_size);
+	std::cout << "_raw_size: " << _raw_size << std::endl;
+
+	if (!_file.read(reinterpret_cast<char *>(_raw_data.data()), _raw_size))
+		throw std::runtime_error("failed to read file!");
 }
 
 void Response::check_resource()
@@ -159,7 +187,8 @@ void Response::check_resource()
 	else
 		_filename += _req.get_path();
 
-	_file.open(_filename.c_str());
-
+	_file.open(_filename.c_str(), std::ios::binary | std::ios::ate);
 	_resource_exists = _file.good();
+	if (!_resource_exists)
+		return ;
 }

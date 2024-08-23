@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 09:57:53 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 11:29:15 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,14 @@ private:
 	std::string	_content_type;
 	std::string	_content_len;
 
-	std::string		_prefix;
-	std::ifstream	_file;
-	std::string		_filename;
-	bool			_resource_exists;
+	std::string				_prefix;
+	std::ifstream			_file;
+	std::string				_filename;
+	std::vector<uint8_t>	_raw_data;
+	std::streampos			_raw_size;
+	std::vector<uint8_t>	_final;
+	// std::string				_final_str;
+	bool					_resource_exists;
 
 public:
 	Response ();
@@ -60,6 +64,7 @@ public:
 	void status_line();
 	void build_body();
 	void check_resource();
+	void read_file();
 
 public:
 	Response (const Request &req);

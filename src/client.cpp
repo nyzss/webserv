@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:26:54 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 11:03:24 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	Client::request()
 void	Client::response()
 {
 	_res = Response(_req);
-	_res.send();
+	// _res.send();
 }
 
 void	Client::reset()
