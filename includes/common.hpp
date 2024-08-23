@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:19:18 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 15:37:44 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 09:28:13 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <algorithm>
 #include <fstream>
 #include <set>
