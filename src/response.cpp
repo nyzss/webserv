@@ -147,8 +147,12 @@ void Response::builder()
 	_final.insert(_final.end(), _buffer.begin(), _buffer.end());
 	_final.insert(_final.end(), _raw_data.begin(), _raw_data.end());
 
-	std::string	partial(_final.begin(), _final.end());
-	std::cout << "---------------\nRESPONSE: \n" << partial << "\n";
+	std::string	partial(_raw_data.begin(), _raw_data.end());
+	std::cout << "---------------\nRESPONSE HEADER: \n" << _buffer << "\n";
+	if (_raw_size > 100)
+		std::cout << "---------------\nRESPONSE BODY: \n" << "[OMITTED]" << std::endl;
+	else
+		std::cout << "---------------\nRESPONSE BODY: \n" << partial << std::endl;
 }
 
 void Response::send()
@@ -156,6 +160,7 @@ void Response::send()
 	if (_fd < 0)
 		throw std::runtime_error("response object initialised with invalid fd");
 	builder();
+	std::cout << "----------- SIZE: " << _final.size() << std::endl;
 	int r_sd = ::send(_fd, _final.data(), _final.size(), 0);
 	if (r_sd < 0)
 		throw std::runtime_error("client couldn't communicate with server!");
@@ -171,7 +176,7 @@ void Response::read_file()
 	}
 	_raw_size = _file.tellg();
 	_file.seekg(0, std::ios::beg);
-	_raw_data.reserve(_raw_size);
+	_raw_data.resize(_raw_size);
 	std::cout << "_raw_size: " << _raw_size << std::endl;
 
 	if (!_file.read(reinterpret_cast<char *>(_raw_data.data()), _raw_size))
