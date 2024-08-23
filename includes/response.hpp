@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 15:26:13 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 15:33:56 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ private:
 	void builder();
 	void send();
 	void debug();
+	void combine();
 
 private:
 	std::string	init_status_line() const;

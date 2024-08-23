@@ -117,6 +117,13 @@ std::string	Response::init_connection() const
 	return connection;
 }
 
+void Response::combine()
+{
+	_final.reserve(_buffer.size() + _raw_size);
+	_final.insert(_final.end(), _buffer.begin(), _buffer.end());
+	_final.insert(_final.end(), _raw_data.begin(), _raw_data.end());
+}
+
 void Response::builder()
 {
 	add_line(init_status_line());
@@ -125,9 +132,7 @@ void Response::builder()
 	add_line(init_connection());
 	end_line();
 
-	_final.reserve(_buffer.size() + _raw_size);
-	_final.insert(_final.end(), _buffer.begin(), _buffer.end());
-	_final.insert(_final.end(), _raw_data.begin(), _raw_data.end());
+	combine();
 }
 
 void Response::send()
