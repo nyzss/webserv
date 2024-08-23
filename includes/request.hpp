@@ -16,7 +16,7 @@
 
 #include <common.hpp>
 
-# define DEFAULT_READ 1024
+# define DEFAULT_READ 5120
 
 class Request
 {
@@ -61,6 +61,7 @@ public:
 
 	void handle_header();
 	void handle_body();
+	void debug() const;
 
 	std::string find_field(const std::string &field_name);
 

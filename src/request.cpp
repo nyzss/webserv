@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 14:50:02 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/23 16:56:44 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,31 +68,26 @@ void	Request::receive()
 	if (this->_fd < 0)
 		throw std::runtime_error("trying to read request with no fd");
 	char _buf[DEFAULT_READ];
-	ssize_t bytes = recv(this->_fd, _buf, (DEFAULT_READ - 1), 0);
+	ssize_t bytes = recv(this->_fd, _buf, DEFAULT_READ, 0);
 	if (bytes < 0)
 	{
 		perror("recv");
 		throw std::runtime_error("failed to read request: recv error");
 	}
-	_buf[bytes] = '\0';
-	_buffer += _buf;
+	_buffer.append(_buf, bytes);
 }
 
 void	Request::check_buffer()
 {
-	size_t header_end_pos = 0;
-	if ((header_end_pos = _buffer.find(separator)) != std::string::npos)
+	size_t header_end_pos = _buffer.find(separator);
+	if (!_header_finished)
 	{
-		_header = _buffer.substr(0, header_end_pos);
-		_body = _buffer.substr(header_end_pos + separator.length());
-
-		std::cout << "\nheader_len: " << _header.length() << "\n";
-		std::cout << "-------------------\n "<< _header << "\n--------------------\n";
-		std::cout << "\nbody_len: " << _body.length() << "\n";
-		std::cout << "-------------------\n "<< _body << "\n--------------------\n";
-	}
-	if (header_end_pos != std::string::npos)
+		if (header_end_pos == std::string::npos)
+			return;
 		_header_finished = true;
+	}
+	_header = _buffer.substr(0, header_end_pos);
+	_body = _buffer.substr(header_end_pos + separator.length());
 }
 
 std::string	Request::find_field(const std::string &field_name)
@@ -105,7 +100,7 @@ std::string	Request::find_field(const std::string &field_name)
 		field_pos += field_name.length();
 		size_t field_end = _buffer.find("\r\n", field_pos);
 		field = _buffer.substr(field_pos, field_end - field_pos);
-		std::cout << field_name << ": " << "[" << field << "]" << std::endl;
+		// std::cout << field_name << ": " << "[" << field << "]" << std::endl;
 		return field;
 	}
 	return "n/a";
@@ -129,24 +124,13 @@ void	Request::handle_header()
 	}
 	this->_path = tokens[1];
 
-
-	std::cout << "REQUEST METHOD: " << this->_method << ", PATH: " << this->_path << std::endl;
-
-	// std::cout << "------REST-------\n" << req << "\n";
-
 	_content_type = find_field(Defaults::Fields()[CONTENT_TYPE]);
-
-	_content_length = std::atoll(find_field(Defaults::Fields()[CONTENT_TYPE]).c_str());
-
-	// if no content_length and if read the totality of header,
-	// then we know we have finished reading.
-	if (_content_length == 0)
-		this->_finished = true;
+	_content_length = std::atoll(find_field(Defaults::Fields()[CONTENT_LENGTH]).c_str());
 }
 
 void Request::handle_body()
 {
-	if (_body.length() == _content_length)
+	if (_body.length() == _content_length || _content_length == 0)
 		_finished = true;
 }
 
@@ -157,11 +141,10 @@ void	Request::read()
 	if (_header_finished == true)
 	{
 		handle_header();
-		if (_finished == true)
-			return ;
 		handle_body();
-		//handle check for body
 	}
+	// if (_finished)
+	// 	debug();
 }
 
 std::string	Request::get_path() const
@@ -187,4 +170,18 @@ bool Request::get_finished() const
 SOCKET	Request::get_sockfd() const
 {
 	return _fd;
+}
+
+void Request::debug() const
+{
+	std::cout << "\nheader_len: " << _header.length() << "\n";
+	std::cout << "-------------------\n "<< _header << "\n--------------------\n";
+	std::cout << "\nbody_len: " << _body.length() << "\n";
+	std::cout << "-------------------\n "<< _body << "\n--------------------\n";
+
+
+	std::cout << "content_len: " << _content_length << "\nbody_len: " << _body.size() << std::endl;
+	std::ofstream s("output.data");
+	s.write(_body.data(), _body.size());
+	std:: cout << "-----------------\nFINISHED\n---------------\n" << std::endl;
 }
