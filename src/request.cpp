@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 12:52:10 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 13:10:01 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,26 @@ void	Request::read()
 	}
 }
 
+// for simple post requests, to write the whole body inside output file
+void Request::handle_raw_bytes_post(const char *filename) const
+{
+	handle_raw_bytes_post(filename, _body);
+}
+
+// for more complex post requests, only writes the `data` inside the output file
+void Request::handle_raw_bytes_post(const char *filename, const std::string &data) const
+{
+	std::string output(UPLOADED);
+	output += filename;
+	std::ofstream output_file(output.c_str());
+
+	if (!output_file)
+		throw std::runtime_error("couldnt open output file!");
+
+	if (!output_file.write(data.data(), data.size()))
+		throw std::runtime_error("couldnt write data to output file!");
+}
+
 void Request::handle_post() const
 {
 	if (_method != POST)
@@ -160,15 +180,30 @@ void Request::handle_post() const
 	if (_content_type.find(Defaults::ContentType()[FORMDATA]) != std::string::npos)
 		std::cout << "MULTIPART_FOMR_DATA POST REACHED()" << std::endl;
 	else if (_content_type == Defaults::ContentType()[OCTEC_STREAM])
+	{
+		handle_raw_bytes_post("raw_data");
 		std::cout << "OCTET_STREAM REACHED" << std::endl;
+	}
 	else if (_content_type == Defaults::ContentType()[IMAGE_JPEG])
+	{
+		handle_raw_bytes_post("img.jpg");
 		std::cout << "IMAGE_JPEG REACHED" << std::endl;
+	}
 	else if (_content_type == Defaults::ContentType()[IMAGE_PNG])
+	{
+		handle_raw_bytes_post("img.png");
 		std::cout << "IMAGE_PNG REACHED" << std::endl;
+	}
 	else if (_content_type == Defaults::ContentType()[IMAGE_WEBP])
+	{
+		handle_raw_bytes_post("img.webp");
 		std::cout << "IMAGE_WEBP REACHED" << std::endl;
+	}
 	else if (_content_type == Defaults::ContentType()[IMAGE_GIF])
+	{
+		handle_raw_bytes_post("img.gif");
 		std::cout << "IMAGE_GIF REACHED" << std::endl;
+	}
 }
 
 std::string	Request::get_path() const

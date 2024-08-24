@@ -56,15 +56,21 @@ public:
 
 public:
 	void read();
+
+private:
 	void receive();
 	void check_buffer();
 
 	void handle_header();
 	void handle_body();
 	void debug() const;
-	void handle_post() const;
 
 	std::string find_field(const std::string &field_name);
+
+private:
+	void handle_post() const;
+	void handle_raw_bytes_post(const char *filename) const;
+	void handle_raw_bytes_post(const char *filename, const std::string &data) const;
 
 public:
 	std::string	get_path() const;
