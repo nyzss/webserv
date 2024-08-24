@@ -71,7 +71,7 @@ std::string Response::init_content_type() const
 	std::string	path = _req.get_path();
 
 	size_t pos = path.find_last_of('.');
-	if (path == "/" || !_resource_exists || pos == std::string::npos)
+	if (!_resource_exists || pos == std::string::npos)
 	{
 		content_type += "text/html";
 		return content_type;
@@ -171,10 +171,7 @@ void Response::init_resource()
 	std::string filename = _prefix;
 	std::ifstream	file;
 
-	if (_req.get_path() == "/")
-		filename += "index.html";
-	else
-		filename += _req.get_path();
+	filename += _req.get_path();
 
 	file.open(filename.c_str(), std::ios::binary | std::ios::ate);
 	if (file.good())

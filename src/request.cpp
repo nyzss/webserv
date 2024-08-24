@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 13:10:01 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 14:31:55 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,10 @@ void	Request::handle_header()
 		if (tokens[0] == Request::_methods_arr[i])
 			this->_method = static_cast<method>(i);
 	}
-	this->_path = tokens[1];
+	if (tokens[1] == "/")
+		this->_path = "/index.html";
+	else
+		this->_path = tokens[1];
 
 	_content_type = find_field(Defaults::Fields()[CONTENT_TYPE]);
 	_content_length = std::atoll(find_field(Defaults::Fields()[CONTENT_LENGTH]).c_str());
