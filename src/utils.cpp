@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 08:56:44 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/19 09:05:00 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 13:53:04 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,32 @@ std::vector<std::string>	ws_split(std::string s, const std::string &delim)
 	vec.push_back(s);
 
 	return vec;
+}
+
+bool	is_dir(const std::string &s)
+{
+	return is_dir(s.c_str());
+}
+
+bool	is_dir(const char *s)
+{
+	struct stat	path_stat;
+
+	if (stat(s, &path_stat) != 0)
+		return false;
+	return S_ISDIR(path_stat.st_mode);
+}
+
+bool	is_file(const std::string &s)
+{
+	return is_file(s.c_str());
+}
+
+bool	is_file(const char *s)
+{
+	struct stat	path_stat;
+
+	if (stat(s, &path_stat) != 0)
+		return false;
+	return S_ISREG(path_stat.st_mode);
 }

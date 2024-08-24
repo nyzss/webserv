@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:36:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:38:07 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 13:53:22 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,11 @@ std::string	to_string(const T& val)
 	s << val;
 	return s.str();
 }
+
+bool	is_dir(const char *s);
+bool	is_dir(const std::string &s);
+
+bool	is_file(const char *s);
+bool	is_file(const std::string &s);
 
 #endif /* UTILS_HPP */

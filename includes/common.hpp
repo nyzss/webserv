@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:19:18 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 09:28:13 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 13:47:39 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <sys/socket.h>
 #include <sys/epoll.h>
+#include <sys/stat.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <cerrno>
