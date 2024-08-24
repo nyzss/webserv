@@ -20,6 +20,3 @@ tester
 vgcore*
 .DS_Store
 webserv
-
-upload/*
-!upload/.gitkeep
