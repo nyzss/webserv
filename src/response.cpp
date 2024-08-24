@@ -18,7 +18,7 @@ Response::Response() : _fd(-1)
 
 Response::Response(const Request &req)
 {
-	_prefix = "example/";
+	_prefix = "example";
 	this->_fd = req.get_sockfd();
 	if (_fd < 0)
 		throw std::runtime_error("response object initialised with invalid fd");
@@ -150,9 +150,11 @@ void Response::read_file(std::ifstream &file)
 		_raw_size = _raw_data.size();
 		return ;
 	}
-
 	_raw_size = file.tellg();
+	std::cout << "raw_size: " << _raw_size << std::endl;
 	file.seekg(0, std::ios::beg);
+
+	// if (_raw_size == )
 	_raw_data.resize(_raw_size);
 
 	if (!file.read(reinterpret_cast<char *>(_raw_data.data()), _raw_size))
@@ -170,7 +172,10 @@ void Response::init_resource()
 		filename += _req.get_path();
 
 	file.open(filename.c_str(), std::ios::binary | std::ios::ate);
-	_resource_exists = file.good();
+	// _resource_exists = file.good();
+
+	if (file.good())
+		_resource_exists = is_file(filename);
 	read_file(file);
 }
 
