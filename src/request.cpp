@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 14:31:55 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 14:36:29 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,7 @@ void Request::debug() const
 
 
 	std::cout << "content_len: " << _content_length << "\nbody_len: " << _body.size() << "\n";
-	std::ofstream s("output.data");
-	s.write(_body.data(), _body.size());
+	// std::ofstream s("output.data");
+	// s.write(_body.data(), _body.size());
 	std:: cout << "-----------------\nFINISHED\n---------------\n" << std::endl;
 }
