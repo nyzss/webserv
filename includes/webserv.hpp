@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 14:27:20 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 12:06:49 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@
 #include "defaults.hpp"
 
 #include "utils.hpp"
+
+# define UPLOADED "./upload"
 
 extern bool	end_sig;
 

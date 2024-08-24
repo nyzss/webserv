@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 14:25:49 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 14:46:57 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 12:51:32 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,16 @@ const char *Defaults::_fields[FIELD_COUNT] =
 	"Content-Type: ",
 	"Content-Length: ",
 	"Connection: ",
+};
+
+const char *Defaults::_content_type[CONTENT_TYPE_COUNT] =
+{
+	"multipart/form-data",
+	"application/octet-stream",
+	"image/jpeg",
+	"image/png",
+	"image/webp",
+	"image/gif",
 };
 
 Defaults::~Defaults() {}
