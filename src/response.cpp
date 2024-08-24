@@ -154,7 +154,12 @@ void Response::read_file(std::ifstream &file)
 	std::cout << "raw_size: " << _raw_size << std::endl;
 	file.seekg(0, std::ios::beg);
 
-	// if (_raw_size == )
+	if (_raw_size == std::numeric_limits<std::streamsize>::max())
+	{
+		_resource_exists = false;
+		read_file(file);
+		// throw std::runtime_error("invalid file, error");
+	}
 	_raw_data.resize(_raw_size);
 
 	if (!file.read(reinterpret_cast<char *>(_raw_data.data()), _raw_size))
@@ -172,8 +177,6 @@ void Response::init_resource()
 		filename += _req.get_path();
 
 	file.open(filename.c_str(), std::ios::binary | std::ios::ate);
-	// _resource_exists = file.good();
-
 	if (file.good())
 		_resource_exists = is_file(filename);
 	read_file(file);

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 16:58:31 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 14:05:54 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ private:
 
 	std::string				_prefix;
 	std::vector<uint8_t>	_raw_data;
-	std::streampos			_raw_size;
+	std::streamsize			_raw_size;
 	std::vector<uint8_t>	_final;
 	bool					_resource_exists;
 
