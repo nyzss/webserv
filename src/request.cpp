@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/23 17:00:22 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/24 12:52:10 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ Request & Request::operator=(const Request &val)
 		this->_fd = val._fd;
 		this->_content_length = val._content_length;
 		this->_content_type = val._content_type;
+		this->_header = val._header;
+		this->_body = val._body;
 	}
 	return *this;
 }
@@ -92,14 +94,14 @@ void	Request::check_buffer()
 
 std::string	Request::find_field(const std::string &field_name)
 {
-	size_t	field_pos = _buffer.find(field_name);
+	size_t	field_pos = _header.find(field_name);
 	if (field_pos != std::string::npos)
 	{
 		std::string	field;
 
 		field_pos += field_name.length();
-		size_t field_end = _buffer.find("\r\n", field_pos);
-		field = _buffer.substr(field_pos, field_end - field_pos);
+		size_t field_end = _header.find("\r\n", field_pos);
+		field = _header.substr(field_pos, field_end - field_pos);
 		// std::cout << field_name << ": " << "[" << field << "]" << std::endl;
 		return field;
 	}
@@ -110,10 +112,10 @@ void	Request::handle_header()
 {
 	std::string	first_line;
 	size_t pos = 0;
-	if ((pos = _buffer.find('\n')) == std::string::npos)
+	if ((pos = _header.find('\n')) == std::string::npos)
 		throw std::runtime_error("no line found in request");
 
-	first_line = _buffer.substr(0, pos);
+	first_line = _header.substr(0, pos);
 	std::vector<std::string> tokens = ws_split(first_line, ' ');
 	if (tokens.size() < 3)
 		throw std::runtime_error("request received has invalid request line");
@@ -143,8 +145,30 @@ void	Request::read()
 		handle_header();
 		handle_body();
 	}
-	// if (_finished)
-	// 	debug();
+	if (_finished)
+	{
+		debug();
+		handle_post();
+	}
+}
+
+void Request::handle_post() const
+{
+	if (_method != POST)
+		return ;
+
+	if (_content_type.find(Defaults::ContentType()[FORMDATA]) != std::string::npos)
+		std::cout << "MULTIPART_FOMR_DATA POST REACHED()" << std::endl;
+	else if (_content_type == Defaults::ContentType()[OCTEC_STREAM])
+		std::cout << "OCTET_STREAM REACHED" << std::endl;
+	else if (_content_type == Defaults::ContentType()[IMAGE_JPEG])
+		std::cout << "IMAGE_JPEG REACHED" << std::endl;
+	else if (_content_type == Defaults::ContentType()[IMAGE_PNG])
+		std::cout << "IMAGE_PNG REACHED" << std::endl;
+	else if (_content_type == Defaults::ContentType()[IMAGE_WEBP])
+		std::cout << "IMAGE_WEBP REACHED" << std::endl;
+	else if (_content_type == Defaults::ContentType()[IMAGE_GIF])
+		std::cout << "IMAGE_GIF REACHED" << std::endl;
 }
 
 std::string	Request::get_path() const
@@ -177,11 +201,11 @@ void Request::debug() const
 	std::cout << "\nheader_len: " << _header.length() << "\n";
 	std::cout << "-------------------\n "<< _header << "\n--------------------\n";
 	std::cout << "\nbody_len: " << _body.length() << "\n";
-	std::cout << "-------------------\n "<< _body << "\n--------------------\n";
+	// std::cout << "-------------------\n "<< _body << "\n--------------------\n";
 
 
-	std::cout << "content_len: " << _content_length << "\nbody_len: " << _body.size() << std::endl;
-	// std::ofstream s("output.data");
-	// s.write(_body.data(), _body.size());
+	std::cout << "content_len: " << _content_length << "\nbody_len: " << _body.size() << "\n";
+	std::ofstream s("output.data");
+	s.write(_body.data(), _body.size());
 	std:: cout << "-----------------\nFINISHED\n---------------\n" << std::endl;
 }

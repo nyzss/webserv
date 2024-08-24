@@ -62,6 +62,7 @@ public:
 	void handle_header();
 	void handle_body();
 	void debug() const;
+	void handle_post() const;
 
 	std::string find_field(const std::string &field_name);
 
