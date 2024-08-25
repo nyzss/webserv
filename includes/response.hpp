@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/25 10:39:50 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 20:49:02 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ class Response
 {
 private:
 	SOCKET		_fd;
-	Request		_req;
+	Request		&_req;
 	std::string	_buffer;
 
 	std::string				_prefix;
@@ -33,12 +33,14 @@ private:
 	bool					_cgi;
 
 public:
-	Response (const Request &req);
+	Response (Request &req);
 public:
-	Response ();
 	Response (const Response &val);
 	Response & operator=(const Response &val);
 	~Response ();
+
+public:
+	void send();
 
 private:
 	void add_line(const std::string &line);
@@ -46,7 +48,7 @@ private:
 	void end_line();
 	void init_resource();
 	void builder();
-	void send();
+	void write();
 	void combine();
 
 	void check_cgi();

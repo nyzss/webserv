@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:34:53 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/22 14:22:51 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 20:46:06 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@
 class Client : public Socket
 {
 private:
+	Response	_res;
+	Request		_req;
 	SOCKET		_server_sock;
 	socklen_t	_sock_len;
-	Request		_req;
-	Response	_res;
 
 private:
 	Client ();

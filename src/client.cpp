@@ -6,18 +6,18 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 14:01:13 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 20:49:11 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <webserv.hpp>
 
-Client::Client() : Socket(), _server_sock(-1), _sock_len(sizeof(_data))
+Client::Client() : Socket(), _res(_req), _server_sock(-1), _sock_len(sizeof(_data))
 {
 	std::memset(&this->_data, 0, sizeof(this->_data));
 }
 
-Client::Client(SOCKET server_sock) : Socket(), _server_sock(server_sock), _sock_len(sizeof(_data))
+Client::Client(SOCKET server_sock) : Socket(), _res(_req), _server_sock(server_sock), _sock_len(sizeof(_data))
 {
 	get_connection();
 }
@@ -42,7 +42,7 @@ void	Client::get_connection()
 	// std::cout << "-----------END---------" << std::endl;
 }
 
-Client::Client(const Client &value) : Socket(value)
+Client::Client(const Client &value) : Socket(value), _res(_req)
 {
 	this->_server_sock = value._server_sock;
 	this->_sock_len = value._sock_len;
@@ -58,7 +58,7 @@ void	Client::request()
 
 void	Client::response()
 {
-	_res = Response(_req);
+	_res.send();
 }
 
 void	Client::reset()

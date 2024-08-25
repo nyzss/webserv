@@ -12,26 +12,27 @@
 
 #include <webserv.hpp>
 
-Response::Response() : _fd(-1)
-{
-}
-
-Response::Response(const Request &req)
+Response::Response(Request &req): _req(req)
 {
 	_prefix = "example";
 	_cgi = false;
-	this->_fd = req.get_sockfd();
+	_fd = -1;
+}
+
+void Response::send()
+{
+	this->_fd = _req.get_sockfd();
 	if (_fd < 0)
 		throw std::runtime_error("response object initialised with invalid fd");
-	this->_req = req;
 	check_cgi();
 	if (!_cgi)
 	{
 		init_resource();
 		builder();
 	}
-	send();
+	write();
 }
+
 void Response::cgi_handler(const std::string &cgi)
 {
 	char	*args[3];
@@ -96,7 +97,7 @@ void	Response::check_cgi()
 	}
 }
 
-Response::Response(const Response &val)
+Response::Response(const Response &val) : _req(val._req)
 {
 	*this = val;
 }
@@ -203,7 +204,7 @@ void Response::builder()
 	combine();
 }
 
-void Response::send()
+void Response::write()
 {
 	int r_sd = ::send(_fd, _final.data(), _final.size(), 0);
 	if (r_sd < 0)
@@ -212,22 +213,20 @@ void Response::send()
 
 void Response::read_file(std::ifstream &file)
 {
-	if (!_resource_exists)
+	if (!_resource_exists || !file)
 	{
 		_raw_data.insert(_raw_data.end(), Defaults::html_not_found.begin(), Defaults::html_not_found.end());
 		_raw_size = _raw_data.size();
 		return ;
 	}
 	_raw_size = file.tellg();
-	std::cout << "raw_size: " << _raw_size << std::endl;
-	file.seekg(0, std::ios::beg);
-
-	if (_raw_size == std::numeric_limits<std::streamsize>::max())
+	if (_raw_size == std::numeric_limits<std::streamsize>::max() || _raw_size < 0)
 	{
 		_resource_exists = false;
 		read_file(file);
-		// throw std::runtime_error("invalid file, error");
+		return ;
 	}
+	file.seekg(0, std::ios::beg);
 	_raw_data.resize(_raw_size);
 
 	if (!file.read(reinterpret_cast<char *>(_raw_data.data()), _raw_size))
