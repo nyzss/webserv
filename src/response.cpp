@@ -25,6 +25,7 @@ void Response::send()
 	this->_fd = _req.get_sockfd();
 	if (_fd < 0)
 		throw std::runtime_error("response object initialised with invalid fd");
+
 	check_cgi();
 	if (!_cgi)
 	{
@@ -97,32 +98,6 @@ void	Response::check_cgi()
 		cgi_handler("python3");
 	}
 }
-
-Response::Response(const Response &val) : _req(val._req)
-{
-	*this = val;
-}
-
-Response & Response::operator=(const Response &val)
-{
-	if (this != &val)
-	{
-		this->_fd = val._fd;
-		this->_req = val._req;
-		this->_buffer = val._buffer;
-
-		this->_prefix = val._prefix;
-		this->_resource_exists = val._resource_exists;
-
-		this->_raw_data = val._raw_data;
-		this->_raw_size = val._raw_size;
-		this->_final = val._final;
-	}
-	return *this;
-}
-
-Response::~Response()
-{}
 
 void Response::end_line()
 {
@@ -251,4 +226,30 @@ void Response::debug() const
 		std::cout << "[OMITTED]" << std::endl;
 	else
 		std::cout << partial << std::endl;
+}
+
+Response & Response::operator=(const Response &val)
+{
+	if (this != &val)
+	{
+		this->_fd = val._fd;
+		this->_req = val._req;
+		this->_buffer = val._buffer;
+
+		this->_prefix = val._prefix;
+		this->_resource_exists = val._resource_exists;
+
+		this->_raw_data = val._raw_data;
+		this->_raw_size = val._raw_size;
+		this->_final = val._final;
+	}
+	return *this;
+}
+
+Response::~Response()
+{}
+
+Response::Response(const Response &val) : _req(val._req)
+{
+	*this = val;
 }

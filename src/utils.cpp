@@ -6,10 +6,11 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 08:56:44 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/25 10:21:40 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 21:29:31 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cstddef>
 #include <webserv.hpp>
 
 std::vector<std::string>	ws_split(std::string s, char delim)
@@ -82,4 +83,21 @@ std::string	get_extension(const std::string &path)
 
 	std::string	ext = path.substr(pos + 1);
 	return ext;
+}
+
+size_t	get_header_end(const std::string &s)
+{
+
+	const char *sep1 = "\r\n\r\n";
+
+	size_t	pos = s.find(sep1);
+	if (pos != std::string::npos)
+		return pos + std::strlen(sep1);
+
+	const char *sep2 = "\n\n";
+	pos = s.find(sep2);
+	if (pos != std::string::npos)
+		return pos + std::strlen(sep2);
+
+	return std::string::npos;
 }

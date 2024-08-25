@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:36:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/25 10:22:05 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 21:23:29 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,7 @@ bool	is_file(const char *s);
 bool	is_file(const std::string &s);
 
 std::string	get_extension(const std::string &path);
+
+size_t		get_header_end(const std::string &s);
 
 #endif /* UTILS_HPP */
