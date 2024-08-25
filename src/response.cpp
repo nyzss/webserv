@@ -67,17 +67,21 @@ void Response::cgi_handler(const std::string &cgi)
 	close(fd[0]);
 
 	std::string body;
-	size_t	cgi_header_end = cgi_buffer.find("\n\n");
+	size_t	cgi_header_end = cgi_buffer.find("\r\n\r\n");
 	if (cgi_header_end != std::string::npos)
-		body = cgi_buffer.substr(cgi_header_end + 2);
+		body = cgi_buffer.substr(cgi_header_end + 4);
 
 	std::string len = Defaults::Fields()[CONTENT_LENGTH];
 	len += to_string(body.size());
+	len += "\n";
 	cgi_buffer.insert(0, len);
 
 	std::string t = Defaults::Fields()[VERSION];
 	t += Defaults::Status()[OK];
+	t += "\n";
 	cgi_buffer.insert(0, t);
+
+	std::cout << "buffer: \n" << cgi_buffer << std::endl;
 
 	_final.insert(_final.end(), cgi_buffer.begin(), cgi_buffer.end());
 }
