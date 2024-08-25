@@ -14,6 +14,7 @@
 
 Response::Response(Request &req): _req(req)
 {
+	_resource_exists = false;
 	_prefix = "example";
 	_cgi = false;
 	_fd = -1;
@@ -220,12 +221,6 @@ void Response::read_file(std::ifstream &file)
 		return ;
 	}
 	_raw_size = file.tellg();
-	if (_raw_size == std::numeric_limits<std::streamsize>::max() || _raw_size < 0)
-	{
-		_resource_exists = false;
-		read_file(file);
-		return ;
-	}
 	file.seekg(0, std::ios::beg);
 	_raw_data.resize(_raw_size);
 
