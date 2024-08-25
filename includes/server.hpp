@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 21:29:58 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 20:20:47 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <socket.hpp>
 #include <client.hpp>
 #include <common.hpp>
-#include <log.hpp>
 
 # define MAX_CONNECTION_POOL 5
 
