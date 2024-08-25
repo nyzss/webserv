@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/25 10:20:20 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 10:39:50 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ private:
 	void combine();
 
 	void check_cgi();
+	void cgi_handler(const std::string &cgi);
 
 private:
 	std::string	init_status_line() const;
