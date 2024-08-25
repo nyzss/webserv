@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 13:26:00 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 10:45:52 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,7 @@
 # define UPLOADED "example/upload/"
 
 extern bool	end_sig;
+
+extern char **environ;
 
 #endif /* WEBSERV_HPP */
