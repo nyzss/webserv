@@ -19,13 +19,20 @@ Response::Response() : _fd(-1)
 Response::Response(const Request &req)
 {
 	_prefix = "example";
+	_cgi = false;
 	this->_fd = req.get_sockfd();
 	if (_fd < 0)
 		throw std::runtime_error("response object initialised with invalid fd");
 	this->_req = req;
+	check_cgi();
 	init_resource();
 	builder();
 	send();
+}
+
+void	Response::check_cgi()
+{
+	// if ()
 }
 
 Response::Response(const Response &val)
@@ -68,16 +75,14 @@ void Response::add_line(const std::string &line)
 std::string Response::init_content_type() const
 {
 	std::string content_type = "Content-Type: ";
-	std::string	path = _req.get_path();
 
-	size_t pos = path.find_last_of('.');
-	if (!_resource_exists || pos == std::string::npos)
+	std::string	ext = get_extension(_req.get_path());
+	if (!_resource_exists || ext == _req.get_path())
 	{
 		content_type += "text/html";
 		return content_type;
 	}
 
-	std::string	ext = path.substr(pos + 1);
 	if (ext == "html")
 		content_type += "text/html";
 	else if (ext == "css")

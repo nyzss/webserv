@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 08:56:44 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 13:53:04 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 10:21:40 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,14 @@ bool	is_file(const char *s)
 	if (stat(s, &path_stat) != 0)
 		return false;
 	return S_ISREG(path_stat.st_mode);
+}
+
+std::string	get_extension(const std::string &path)
+{
+	size_t pos = path.find_last_of('.');
+	if (pos == std::string::npos)
+		return path;
+
+	std::string	ext = path.substr(pos + 1);
+	return ext;
 }

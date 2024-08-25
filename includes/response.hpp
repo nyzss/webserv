@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 14:05:54 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/25 10:20:20 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ private:
 	std::vector<uint8_t>	_final;
 	bool					_resource_exists;
 
+	bool					_cgi;
+
 public:
 	Response (const Request &req);
 public:
@@ -46,6 +48,8 @@ private:
 	void builder();
 	void send();
 	void combine();
+
+	void check_cgi();
 
 private:
 	std::string	init_status_line() const;
