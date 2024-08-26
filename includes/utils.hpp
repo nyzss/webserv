@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:36:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:10:19 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 11:02:29 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,6 @@ namespace http
 	bool	is_file(const std::string &s);
 
 	std::string	get_extension(const std::string &path);
-
-	size_t		get_header_end(const std::string &s);
 }
 
 #endif /* UTILS_HPP */

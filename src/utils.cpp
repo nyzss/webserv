@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 08:56:44 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:09:53 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 11:02:33 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,20 +87,5 @@ namespace http
 		return ext;
 	}
 
-	size_t	get_header_end(const std::string &s)
-	{
 
-		const char *sep1 = "\r\n\r\n";
-
-		size_t	pos = s.find(sep1);
-		if (pos != std::string::npos)
-			return pos + std::strlen(sep1);
-
-		const char *sep2 = "\n\n";
-		pos = s.find(sep2);
-		if (pos != std::string::npos)
-			return pos + std::strlen(sep2);
-
-		return std::string::npos;
-	}
 }
