@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "defaults.hpp"
+#include "utils.hpp"
 #include <ios>
 #include <sstream>
 #include <webserv.hpp>
@@ -74,24 +75,9 @@ namespace http
 			cgi_buffer.append(buf, b_read);
 		close(fd[0]);
 
-		std::string body;
-		size_t	cgi_header_end = cgi_buffer.find("\r\n\r\n");
-		if (cgi_header_end != std::string::npos)
-			body = cgi_buffer.substr(cgi_header_end + 4);
 
-		std::string len = Defaults::get_header_field(HeaderField::CONTENT_LENGTH);
-		len += to_string(body.size());
-		len += "\n";
-		cgi_buffer.insert(0, len);
-
-		std::string t = Defaults::get_header_field(HeaderField::VERSION);
-		t += Defaults::get_status_code(StatusCode::OK);
-		t += "\n";
-		cgi_buffer.insert(0, t);
-
-		std::cout << "buffer: \n" << cgi_buffer << std::endl;
-
-		_message = Parser(cgi_buffer);
+		_message = cgi_buffer;
+		_message.add_start_line(StatusCode::OK);
 	}
 
 	void	Response::check_cgi()
@@ -132,7 +118,7 @@ namespace http
 
 	void Response::write()
 	{
-		debug();
+		// debug();
 		std::string	combine = _message.get_combine();
 		int r_sd = ::send(_fd, combine.data(), combine.length(), 0);
 		if (r_sd < 0)
