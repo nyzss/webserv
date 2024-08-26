@@ -6,10 +6,12 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:14:22 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 15:21:47 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "defaults.hpp"
+#include "parser.hpp"
 #include "webserv.hpp"
 
 void	handle_sigint(int sig)
@@ -23,6 +25,15 @@ void	handle_sigint(int sig)
 int main()
 {
 	http::Cluster	cluster;
+
+	http::Parser parse;
+
+	parse.add_header_line(http::HeaderField::CONTENT_TYPE, "image/jpeg");
+	parse.add_header_line(http::HeaderField::CONTENT_LENGTH, "150");
+
+	parse.add_start_line(http::StatusCode::OK);
+
+	std::cout << parse.get_combine() << std::endl;
 
 	try
 	{

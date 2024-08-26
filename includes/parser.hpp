@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 13:21:48 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 15:26:03 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,29 +22,49 @@ namespace http
 	class Parser
 	{
 	private:
+		struct Separator
+		{
+			enum Value
+			{
+				CRLF,
+				LF
+			};
+		};
+	private:
 		static const char *CRLF_END;
 		static const char *LF_END;
 		static const char *CRLF;
 		static const char *LF;
 
 	private:
-		std::string	_header;
-		std::string	_body;
-		std::string	_raw;
+		std::string			_header;
+		std::string			_body;
+		std::string			_raw;
+
+		Separator::Value	_sep;
 
 	public:
+		Parser ();
 		Parser (const std::string &buffer);
 		~Parser ();
 
 	public:
 		void add_start_line(const std::string &line);
+		void add_start_line(StatusCode::Value code);
+		void add_header_line(HeaderField::Value field, const std::string &line);
+		void add_header_line(HeaderField::Value field, const std::string &line, size_t idx);
+
+		void set_header_line(HeaderField::Value field, const std::string &line);
+
+		void add_body(const std::string &body);
 
 	public:
 		std::string get_value(HeaderField::Value val) const;
 		std::string get_combine();
 
 	private:
-		size_t		find_header_end(const std::string &s) const;
+		size_t		find_header_end(const std::string &s);
+
 		size_t		find_line_end(const std::string &s, size_t start_pos) const;
 		bool		check_exists(HeaderField::Value val) const;
 	};
