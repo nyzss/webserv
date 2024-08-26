@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 15:26:03 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 20:47:32 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,8 @@ namespace http
 		~Parser ();
 
 	public:
-		void add_start_line(const std::string &line);
 		void add_start_line(StatusCode::Value code);
 		void add_header_line(HeaderField::Value field, const std::string &line);
-		void add_header_line(HeaderField::Value field, const std::string &line, size_t idx);
 
 		void set_header_line(HeaderField::Value field, const std::string &line);
 

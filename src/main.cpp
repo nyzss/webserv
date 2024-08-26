@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 15:21:47 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 20:50:28 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ int main()
 	parse.add_header_line(http::HeaderField::CONTENT_LENGTH, "150");
 
 	parse.add_start_line(http::StatusCode::OK);
+
+	parse.add_body("<html><body>Hello, World!</body></html>");
 
 	std::cout << parse.get_combine() << std::endl;
 

@@ -12,6 +12,7 @@
 
 #include "parser.hpp"
 #include "defaults.hpp"
+#include "utils.hpp"
 #include <cstddef>
 #include <cstring>
 #include <string>
@@ -57,37 +58,41 @@ namespace http
 
 	void Parser::add_start_line(StatusCode::Value code)
 	{
-		const char *status_code = Defaults::get_status_code(code);
-		add_header_line(HeaderField::VERSION, status_code, 0);
-	}
-
-	void Parser::add_start_line(const std::string &line)
-	{
-		add_header_line(HeaderField::VERSION, line, 0);
+		if (check_exists(HeaderField::VERSION))
+			return ;
+		const char *h = Defaults::get_header_field(HeaderField::VERSION);
+		std::string status_code = Defaults::get_status_code(code);
+		_header.insert(0, h + status_code + CRLF);
 	}
 
 	void Parser::add_header_line(HeaderField::Value field, const std::string &line)
 	{
 		if (check_exists(field))
 			return ;
-		_header.append(line + CRLF);
+		const char * f = Defaults::get_header_field(field);
+		_header.append(f + line + CRLF);
 	}
 
-	void Parser::add_header_line(HeaderField::Value field, const std::string &line, size_t idx)
+	void Parser::set_header_line(HeaderField::Value field, const std::string &line)
 	{
-		if (check_exists(field))
-			return ;
-		_header.insert(idx, line + CRLF);
-	}
+		const char *s = Defaults::get_header_field(field);
+		size_t	pos = _header.find(s);
+		if (pos == std::string::npos)
+			add_header_line(field, line);
+		else
+		{
+			size_t	nl_pos = find_line_end(line, pos);
+			size_t	pos_start = pos + std::strlen(s);
+			size_t	len = nl_pos - pos_start;
 
-	// void Parser::set_header_line(HeaderField::Value field, const std::string &line)
-	// {
-	// 	size_t	pos
-	// }
+			_header.replace(pos_start, len, line);
+		}
+	}
 
 	void Parser::add_body(const std::string &body)
 	{
 		_body = body;
+		set_header_line(HeaderField::CONTENT_LENGTH, to_string(_body.length()));
 	}
 
 	size_t	Parser::find_header_end(const std::string &s)
