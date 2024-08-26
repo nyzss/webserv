@@ -81,11 +81,10 @@ namespace http
 			add_header_line(field, line);
 		else
 		{
-			size_t	nl_pos = find_line_end(line, pos);
-			size_t	pos_start = pos + std::strlen(s);
-			size_t	len = nl_pos - pos_start;
+			std::string val_to_replace = get_value(field);
+			size_t val_pos = _header.find(val_to_replace);
 
-			_header.replace(pos_start, len, line);
+			_header.replace(val_pos, val_to_replace.length(), line + CRLF);
 		}
 	}
 
