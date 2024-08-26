@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:44:34 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/25 20:20:47 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 09:08:55 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,24 @@
 
 # define MAX_CONNECTION_POOL 5
 
-class Server : public Socket
-{
-public:
-	void start_server();
-	void connect() const;
+namespace http {
+	class Server : public Socket
+	{
+	public:
+		void start_server();
+		void connect() const;
 
-public:
-	Server ();
-	Server (const std::string &ip, PORT port);
-	Server (const Server &val);
-	~Server ();
-	bool	operator==(int val);
+	public:
+		Server ();
+		Server (const std::string &ip, PORT port);
+		Server (const Server &val);
+		~Server ();
+		bool	operator==(int val);
 
-// getters/setters
-public:
-	std::string get_address() const;
-};
+	// getters/setters
+	public:
+		std::string get_address() const;
+	};
+}
 
 #endif /* SERVER_HPP */

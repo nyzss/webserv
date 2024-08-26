@@ -6,60 +6,63 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:05:40 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/20 21:44:41 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 09:09:37 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <webserv.hpp>
 
-Socket::Socket () : _fd(-1), _port(-1)
+namespace http
 {
-}
+	Socket::Socket () : _fd(-1), _port(-1)
+	{
+	}
 
-Socket::Socket (const Socket &val)
-{
-	this->_data = val._data;
-	this->_fd = val._fd;
-	this->_port = val._port;
-	this->_ip = val._ip;
-}
-
-Socket	&Socket::operator=(const Socket &val)
-{
-	if (this != &val)
+	Socket::Socket (const Socket &val)
 	{
 		this->_data = val._data;
 		this->_fd = val._fd;
-		this->_ip = val._ip;
 		this->_port = val._port;
+		this->_ip = val._ip;
 	}
-	return *this;
-}
 
-Socket::~Socket()
-{
-	if (this->_fd != -1)
+	Socket	&Socket::operator=(const Socket &val)
 	{
-		close(this->_fd);
-		this->_fd = -1;
+		if (this != &val)
+		{
+			this->_data = val._data;
+			this->_fd = val._fd;
+			this->_ip = val._ip;
+			this->_port = val._port;
+		}
+		return *this;
 	}
-}
 
-void	Socket::non_blocking() const
-{
-	int	flags = fcntl(_fd, F_GETFL, 0);
+	Socket::~Socket()
+	{
+		if (this->_fd != -1)
+		{
+			close(this->_fd);
+			this->_fd = -1;
+		}
+	}
 
-	if (flags < 0)
-		throw std::runtime_error("couldn't get flags of socketfd.");
-	flags |= O_NONBLOCK;
+	void	Socket::non_blocking() const
+	{
+		int	flags = fcntl(_fd, F_GETFL, 0);
 
-	int	r_set = fcntl(_fd, F_SETFL, flags);
+		if (flags < 0)
+			throw std::runtime_error("couldn't get flags of socketfd.");
+		flags |= O_NONBLOCK;
 
-	if (r_set < 0)
-		throw std::runtime_error("couldn't set flags of socketfd.");
-}
+		int	r_set = fcntl(_fd, F_SETFL, flags);
 
-SOCKET	Socket::get_socketfd() const
-{
-	return this->_fd;
+		if (r_set < 0)
+			throw std::runtime_error("couldn't set flags of socketfd.");
+	}
+
+	SOCKET	Socket::get_socketfd() const
+	{
+		return this->_fd;
+	}
 }

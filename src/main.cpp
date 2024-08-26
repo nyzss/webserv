@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/25 17:05:39 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 09:14:22 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,21 @@ void	handle_sigint(int sig)
 
 int main()
 {
-	Cluster	cluster;
+	http::Cluster	cluster;
 
 	try
 	{
 		signal(SIGINT, handle_sigint);
-		cluster.add_server(new Server("0.0.0.0", 8080));
-		cluster.add_server(new Server("0.0.0.0", 8081));
-		cluster.add_server(new Server("0.0.0.0", 8082));
-		cluster.add_server(new Server("0.0.0.0", 8083));
-		cluster.add_server(new Server("0.0.0.0", 8084));
+		cluster.add_server(new http::Server("0.0.0.0", 8080));
+		cluster.add_server(new http::Server("0.0.0.0", 8081));
+		cluster.add_server(new http::Server("0.0.0.0", 8082));
+		cluster.add_server(new http::Server("0.0.0.0", 8083));
+		cluster.add_server(new http::Server("0.0.0.0", 8084));
 
 		cluster.start();
 	}
 	catch(const std::exception& e)
 	{
-		log_err(e.what());
+		http::log_err(e.what());
 	}
 }

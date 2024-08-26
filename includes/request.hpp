@@ -18,66 +18,69 @@
 
 # define DEFAULT_READ 5120
 
-class Request
+namespace http
 {
-public:
-	enum method
+	class Request
 	{
-		GET,
-		POST,
-		DELETE,
-		LAST = DELETE
+	public:
+		enum method
+		{
+			GET,
+			POST,
+			DELETE,
+			LAST = DELETE
+		};
+	private:
+		std::string	_buffer;
+		std::string	_header;
+		std::string	_body;
+		SOCKET	_fd;
+		static const char *_methods_arr[];
+		static const std::string	separator;
+		size_t	_needed_size;
+		size_t	_current_size;
+		bool	_finished;
+		bool	_header_finished;
+
+	private:
+		method		_method;
+		size_t		_content_length;
+		std::string	_path;
+		std::string	_content_type;
+
+	public:
+		Request ();
+		Request (SOCKET sockfd);
+		Request (const Request &val);
+		~Request ();
+		Request & operator=(const Request &val);
+		// Request (const std::string &req); // obsolete
+
+	public:
+		void read();
+
+	private:
+		void receive();
+		void check_buffer();
+
+		void handle_header();
+		void handle_body();
+		void debug() const;
+
+		std::string find_field(const std::string &field_name);
+
+	private:
+		void handle_post() const;
+		void handle_raw_bytes_post(const char *filename) const;
+		void handle_raw_bytes_post(const char *filename, const std::string &data) const;
+
+	public:
+		std::string	get_path() const;
+		method get_method() const;
+		std::string get_method_str() const;
+		bool get_finished() const;
+		SOCKET	get_sockfd() const;
 	};
-private:
-	std::string	_buffer;
-	std::string	_header;
-	std::string	_body;
-	SOCKET	_fd;
-	static const char *_methods_arr[];
-	static const std::string	separator;
-	size_t	_needed_size;
-	size_t	_current_size;
-	bool	_finished;
-	bool	_header_finished;
-
-private:
-	method		_method;
-	size_t		_content_length;
-	std::string	_path;
-	std::string	_content_type;
-
-public:
-	Request ();
-	Request (SOCKET sockfd);
-	Request (const Request &val);
-	~Request ();
-	Request & operator=(const Request &val);
-	// Request (const std::string &req); // obsolete
-
-public:
-	void read();
-
-private:
-	void receive();
-	void check_buffer();
-
-	void handle_header();
-	void handle_body();
-	void debug() const;
-
-	std::string find_field(const std::string &field_name);
-
-private:
-	void handle_post() const;
-	void handle_raw_bytes_post(const char *filename) const;
-	void handle_raw_bytes_post(const char *filename, const std::string &data) const;
-
-public:
-	std::string	get_path() const;
-	method get_method() const;
-	std::string get_method_str() const;
-	bool get_finished() const;
-	SOCKET	get_sockfd() const;
-};
+}
 
 #endif /* REQUEST_HPP */
