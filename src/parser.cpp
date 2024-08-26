@@ -56,12 +56,11 @@ namespace http
 			_sep = Separator::CRLF;
 		else
 		{
-			_header = buffer.substr(0, header_end);
-			if (_sep == Separator::CRLF)
-				header_end += std::strlen(CRLF);
-			else
-				header_end += std::strlen(LF);
-			_body = buffer.substr(header_end);
+			_header = _raw.substr(0, header_end);
+			_header.append(CRLF);
+
+			size_t	sep_offset = _sep == Separator::CRLF ? std::strlen(CRLF_END) : std::strlen(LF_END);
+			add_body(_raw.substr(header_end + sep_offset));
 		}
 	}
 
@@ -92,17 +91,13 @@ namespace http
 
 	void Parser::set_header_line(HeaderField::Value field, const std::string &line)
 	{
-		const char *s = Defaults::get_header_field(field);
-		size_t	pos = _header.find(s);
-		if (pos == std::string::npos)
+		if (!check_exists(field))
 			add_header_line(field, line);
-		else
-		{
-			std::string val_to_replace = get_value(field);
-			size_t val_pos = _header.find(val_to_replace);
 
-			_header.replace(val_pos, val_to_replace.length(), line + CRLF);
-		}
+		std::string val_to_replace = get_value(field);
+		size_t val_pos = _header.find(val_to_replace);
+
+		_header.replace(val_pos, val_to_replace.length(), line);
 	}
 
 	void Parser::add_body(const std::string &body)
@@ -168,6 +163,16 @@ namespace http
 	size_t	Parser::length() const
 	{
 		return _header.size() + _body.size() + std::strlen(CRLF);
+	}
+
+	const std::string &Parser::get_header() const
+	{
+		return _header;
+	}
+
+	const std::string &Parser::get_body() const
+	{
+		return _body;
 	}
 
 	Parser::~Parser()

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 21:34:16 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 21:54:31 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,9 @@ namespace http
 		std::string get_value(HeaderField::Value val) const;
 		std::string get_combine() const;
 		size_t		length() const;
+
+		const std::string &get_header() const;
+		const std::string &get_body() const;
 
 	private:
 		size_t		find_header_end(const std::string &s);
