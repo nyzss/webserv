@@ -18,11 +18,11 @@
 
 namespace http
 {
-	const char *CRLF = "\r\n";
-	const char *LF = "\n";
+	const char *Parser::CRLF = "\r\n";
+	const char *Parser::LF = "\n";
 
-	const char *CRLF_END = "\r\n\r\n";
-	const char *LF_END = "\n\n";
+	const char *Parser::CRLF_END = "\r\n\r\n";
+	const char *Parser::LF_END = "\n\n";
 
 	Parser::Parser(const std::string &buffer)
 	{
@@ -95,7 +95,6 @@ namespace http
 	}
 
 	Parser::~Parser()
-	{
-	}
+	{ }
 
 }
