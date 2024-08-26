@@ -30,6 +30,23 @@ namespace http
 		_sep = Separator::CRLF;
 	}
 
+	Parser::Parser (const Parser &val)
+	{
+		*this = val;
+	}
+
+	Parser &Parser::operator=(const Parser &val)
+	{
+		if (this != &val)
+		{
+			this->_raw = val._raw;
+			this->_header = val._header;
+			this->_body = val._body;
+			this->_sep = val._sep;
+		}
+		return *this;
+	}
+
 	Parser::Parser(const std::string &buffer)
 	{
 		_raw = buffer;
@@ -138,7 +155,7 @@ namespace http
 		return _header.substr(value_pos, total);
 	}
 
-	std::string Parser::get_combine()
+	std::string Parser::get_combine() const
 	{
 		std::string	combine;
 		combine.reserve(_header.size() + _body.size() + std::strlen(CRLF));
@@ -147,6 +164,10 @@ namespace http
 		combine.append(CRLF);
 		combine.append(_body);
 		return combine;
+	}
+	size_t	Parser::length() const
+	{
+		return _header.size() + _body.size() + std::strlen(CRLF);
 	}
 
 	Parser::~Parser()

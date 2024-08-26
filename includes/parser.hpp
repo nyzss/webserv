@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 20:47:32 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 21:34:16 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ namespace http
 	public:
 		Parser ();
 		Parser (const std::string &buffer);
+		Parser (const Parser &val);
+		Parser &operator=(const Parser &val);
 		~Parser ();
 
 	public:
@@ -53,12 +55,12 @@ namespace http
 		void add_header_line(HeaderField::Value field, const std::string &line);
 
 		void set_header_line(HeaderField::Value field, const std::string &line);
-
 		void add_body(const std::string &body);
 
 	public:
 		std::string get_value(HeaderField::Value val) const;
-		std::string get_combine();
+		std::string get_combine() const;
+		size_t		length() const;
 
 	private:
 		size_t		find_header_end(const std::string &s);

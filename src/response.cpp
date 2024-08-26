@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "defaults.hpp"
+#include <ios>
+#include <sstream>
 #include <webserv.hpp>
 
 namespace http
@@ -89,7 +91,7 @@ namespace http
 
 		std::cout << "buffer: \n" << cgi_buffer << std::endl;
 
-		_final.insert(_final.end(), cgi_buffer.begin(), cgi_buffer.end());
+		_message = Parser(cgi_buffer);
 	}
 
 	void	Response::check_cgi()
@@ -102,90 +104,37 @@ namespace http
 		}
 	}
 
-	void Response::end_line()
-	{
-		_buffer += "\r\n";
-	}
-
-	void Response::add_line(const std::string &line)
-	{
-		_buffer += line;
-		end_line();
-	}
-
-	std::string Response::init_content_type() const
-	{
-		std::string content_type = "Content-Type: ";
-
-		std::string	ext = get_extension(_req.get_path());
-		if (!_resource_exists || ext == _req.get_path())
-		{
-			content_type += "text/html";
-			return content_type;
-		}
-
-		if (ext == "html")
-			content_type += "text/html";
-		else if (ext == "css")
-			content_type += "text/css";
-		else if (ext == "js")
-			content_type += "application/javascript";
-		else if (ext == "jpg")
-			content_type += "image/jpeg";
-		else if (ext == "png")
-			content_type += "image/png";
-		else if (ext == "gif")
-			content_type += "image/gif";
-		else
-			content_type += "text/html";
-		return content_type;
-	}
-
-	std::string	Response::init_status_line() const
-	{
-		std::string status_line = Defaults::get_header_field(HeaderField::VERSION);
-		if (!_resource_exists)
-			status_line += Defaults::get_status_code(StatusCode::NOT_FOUND);
-		else
-			status_line += Defaults::get_status_code(StatusCode::OK);
-		return status_line;
-	}
-
-	std::string	Response::init_content_len() const
-	{
-		std::string content_len = Defaults::get_header_field(HeaderField::CONTENT_LENGTH);
-		content_len += to_string(_raw_size);
-		return content_len;
-	}
-
-	std::string	Response::init_connection() const
-	{
-		std::string connection = Defaults::get_header_field(HeaderField::CONNECTION);
-		connection += "close";
-		return connection;
-	}
-
-	void Response::combine()
-	{
-		_final.reserve(_buffer.size() + _raw_size);
-		_final.insert(_final.end(), _buffer.begin(), _buffer.end());
-		_final.insert(_final.end(), _raw_data.begin(), _raw_data.end());
-	}
-
 	void Response::builder()
 	{
-		add_line(init_status_line());
-		add_line(init_content_type());
-		add_line(init_content_len());
-		add_line(init_connection());
-		end_line();
+		std::string	ext = get_extension(_req.get_path());
+		if (!_resource_exists || ext == _req.get_path() || ext == "html")
+			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::HTML));
+		else if (ext == "css")
+			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::CSS));
+		else if (ext == "js")
+			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::JAVASCRIPT));
+		else if (ext == "jpg")
+			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_JPEG));
+		else if (ext == "png")
+			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_PNG));
+		else if (ext == "gif")
+			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_GIF));
+		else
+			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::HTML));
 
-		combine();
+		_message.add_header_line(HeaderField::CONNECTION, "close");
+
+		if (_resource_exists)
+			_message.add_start_line(StatusCode::OK);
+		else
+			_message.add_start_line(StatusCode::NOT_FOUND);
 	}
 
 	void Response::write()
 	{
-		int r_sd = ::send(_fd, _final.data(), _final.size(), 0);
+		debug();
+		std::string	combine = _message.get_combine();
+		int r_sd = ::send(_fd, combine.data(), combine.length(), 0);
 		if (r_sd < 0)
 			throw std::runtime_error("client couldn't communicate with server!");
 	}
@@ -194,16 +143,12 @@ namespace http
 	{
 		if (!_resource_exists || !file)
 		{
-			_raw_data.insert(_raw_data.end(), Defaults::html_not_found.begin(), Defaults::html_not_found.end());
-			_raw_size = _raw_data.size();
+			_message.add_body(Defaults::html_not_found);
 			return ;
 		}
-		_raw_size = file.tellg();
-		file.seekg(0, std::ios::beg);
-		_raw_data.resize(_raw_size);
-
-		if (!file.read(reinterpret_cast<char *>(_raw_data.data()), _raw_size))
-			throw std::runtime_error("failed to read file!");
+		std::stringstream stream;
+		stream << file.rdbuf();
+		_message.add_body(stream.str());
 	}
 
 	void Response::init_resource()
@@ -213,7 +158,7 @@ namespace http
 
 		filename += _req.get_path();
 
-		file.open(filename.c_str(), std::ios::binary | std::ios::ate);
+		file.open(filename.c_str(), std::ios::binary);
 		if (file.good())
 			_resource_exists = is_file(filename);
 		read_file(file);
@@ -221,14 +166,10 @@ namespace http
 
 	void Response::debug() const
 	{
-		std::string	partial(_raw_data.begin(), _raw_data.end());
-		std::cout << "---------------\nRESPONSE HEADER: \n" << _buffer << "\n";
-
-		std::cout << "---------------\nRESPONSE BODY: \n";
-		if (_raw_size > 100)
-			std::cout << "[OMITTED]" << std::endl;
-		else
-			std::cout << partial << std::endl;
+		std::cout << "\n\n\n--------------- RESPONSE ---------------\n";
+		std::cout << _message.get_combine().substr(0, 150);
+		if (_message.length() > 150)
+			std::cout << "..";
 	}
 
 	Response & Response::operator=(const Response &val)
@@ -242,9 +183,7 @@ namespace http
 			this->_prefix = val._prefix;
 			this->_resource_exists = val._resource_exists;
 
-			this->_raw_data = val._raw_data;
-			this->_raw_size = val._raw_size;
-			this->_final = val._final;
+			this->_message = val._message;
 		}
 		return *this;
 	}
