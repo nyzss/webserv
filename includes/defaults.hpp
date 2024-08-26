@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 14:25:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 12:51:36 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/26 08:59:42 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,79 +16,62 @@
 
 #include <common.hpp>
 
-enum status_code
+namespace http
 {
-	OK,
-	NOT_FOUND,
-	STATUS_COUNT,
-};
-
-enum header_field
-{
-	VERSION,
-	CONTENT_TYPE,
-	CONTENT_LENGTH,
-	CONNECTION,
-	FIELD_COUNT,
-};
-
-enum content_type
-{
-	FORMDATA,
-	OCTEC_STREAM,
-	IMAGE_JPEG,
-	IMAGE_PNG,
-	IMAGE_WEBP,
-	IMAGE_GIF,
-	CONTENT_TYPE_COUNT,
-};
-
-class Defaults
-{
-private:
-	static const char *_status[STATUS_COUNT];
-	static const char *_fields[FIELD_COUNT];
-	static const char *_content_type[CONTENT_TYPE_COUNT];
-
-public:
-	static const std::string	html_not_found;
-
-public:
-	class	Fields
+	struct	StatusCode
 	{
-	public:
-		const char *operator[](size_t field) const
+		enum Value
 		{
-			if (field >= FIELD_COUNT)
-				throw std::out_of_range("trying to access field that is out of range");
-			return Defaults::_fields[field];
-		}
+			OK,
+			NOT_FOUND,
+			COUNT
+		};
 	};
 
-	class	Status
+	struct HeaderField
 	{
-	public:
-		const char *operator[](size_t code) const
+		enum Value
 		{
-			if (code >= STATUS_COUNT)
-				throw std::out_of_range("trying to access status code that is out of range");
-			return Defaults::_status[code];
-		}
+			VERSION,
+			CONTENT_TYPE,
+			CONTENT_LENGTH,
+			CONNECTION,
+			COUNT,
+		};
 	};
 
-	class	ContentType
+	struct ContentType
 	{
-	public:
-		const char *operator[](size_t type) const
+		enum Value
 		{
-			if (type >= CONTENT_TYPE_COUNT)
-				throw std::out_of_range("trying to access status code that is out of range");
-			return Defaults::_content_type[type];
-		}
+			HTML,
+			CSS,
+			JAVASCRIPT,
+			FORMDATA,
+			OCTEC_STREAM,
+			IMAGE_JPEG,
+			IMAGE_PNG,
+			IMAGE_WEBP,
+			IMAGE_GIF,
+			COUNT,
+		};
 	};
 
-public:
-	virtual ~Defaults() = 0;
-};
+	class Defaults
+	{
+	private:
+		static const char *_status[StatusCode::COUNT];
+		static const char *_fields[HeaderField::COUNT];
+		static const char *_content_type[ContentType::COUNT];
+
+	public:
+		static const std::string	html_not_found;
+
+	public:
+		static const char	*get_status_code(StatusCode::Value code);
+		static const char	*get_header_field(HeaderField::Value field);
+		static const char	*get_content_type(ContentType::Value type);
+	};
+}
 
 #endif /* DEFAULTS_HPP */
