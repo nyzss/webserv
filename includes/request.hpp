@@ -17,7 +17,7 @@
 #include <common.hpp>
 #include <parser.hpp>
 
-# define DEFAULT_READ 5120
+# define DEFAULT_READ 10240
 
 namespace http
 {

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 15:31:39 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 16:22:09 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,7 @@ namespace http
 
 	void Request::handle_body()
 	{
-		const std::string &content_len = _message.get_header_value(Defaults::get_header_field(HeaderField::CONTENT_LENGTH));
-		size_t	len = std::atoll(content_len.c_str());
-		if (_message.get_body().length() == len || len == 0)
+		if (_message.match_content_len())
 			_finished = true;
 	}
 

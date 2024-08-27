@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 14:58:26 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 16:20:21 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ namespace http
 		Separator::Value	_sep;
 		std::map<std::string, std::vector<std::string> > _header_fields;
 
+		bool				_match_body_len;
+
 	public:
 		Parser ();
 		Parser (const std::string &buffer);
@@ -60,6 +62,12 @@ namespace http
 		void append(const std::string &key, const std::string &value);
 		void append(HeaderField::Value val, const std::string &value);
 
+		void set_header_value(const std::string &key, const std::string &value);
+		void set_header_value(HeaderField::Value val, const std::string &value);
+
+		std::string get_header_value(const std::string &s) const;
+		std::string get_header_value(HeaderField::Value val) const;
+
 		size_t		length() const;
 		std::string generate() const;
 		std::string generate_header() const;
@@ -68,10 +76,11 @@ namespace http
 
 		const std::string &get_body() const;
 		const std::string &get_start_line() const;
-		std::string get_header_value(const std::string &s) const;
 		bool exist(const std::string &s) const;
+		bool exist(HeaderField::Value val) const;
 
 		bool get_finished() const;
+		bool match_content_len() const;
 
 	private:
 		size_t		find_header_end(const std::string &s);

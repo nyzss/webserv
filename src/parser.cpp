@@ -25,6 +25,7 @@ namespace http
 	Parser::Parser()
 	{
 		_sep = Separator::NONE;
+		_match_body_len = false;
 	}
 
 	Parser::Parser (const Parser &val)
@@ -35,6 +36,7 @@ namespace http
 	Parser::Parser(const std::string &buffer)
 	{
 		_sep = Separator::NONE;
+		_match_body_len = false;
 		handle_buffer(buffer);
 	}
 
@@ -46,6 +48,7 @@ namespace http
 			_sep = val._sep;
 			_header_fields = val._header_fields;
 			_start_line = val._start_line;
+			_match_body_len = val._match_body_len;
 		}
 		return *this;
 	}
@@ -58,6 +61,18 @@ namespace http
 	void Parser::append(const std::string &key, const std::string &value)
 	{
 		_header_fields[key].push_back(value);
+	}
+
+	void Parser::set_header_value(const std::string &key, const std::string &value)
+	{
+		if (_header_fields.find(key) == _header_fields.end())
+			append(key, value);
+		_header_fields[key].front() = value;
+	}
+
+	void Parser::set_header_value(HeaderField::Value val, const std::string &value)
+	{
+		set_header_value(Defaults::get_header_field(val), value);
 	}
 
 	void Parser::set_start_line(const std::string &s)
@@ -101,7 +116,6 @@ namespace http
 
 		size_t	sep_offset = _sep == Separator::CRLF ? std::strlen(CRLF_END) : std::strlen(LF_END);
 		std::string	parsed_header = buf.substr(0, header_end + sep_offset);
-		add_body(buf.substr(header_end + sep_offset));
 
 		size_t	nl_pos = 0;
 		while ((nl_pos = parsed_header.find(CRLF)) != std::string::npos)
@@ -111,19 +125,7 @@ namespace http
 
 		parse_buffer(parsed_header);
 
-		// // for (size_t i = 0; i < parsed_header.length(); i++)
-		// // {
-		// // 	if (parsed_header[i] == '\r')
-		// // 		std::cout << "\\r";
-		// // 	else if (parsed_header[i] == '\n')
-		// // 		std::cout << "\\n" << "\n";
-		// // 	else
-		// // 		std::cout << parsed_header[i];
-		// // }
-		// // std::cout << std::endl;
-		// std::cout << "parsed http: " << parsed_header << std::endl;
-
-		// std::cout << "GENERATED HTTP: " << generate() << std::endl;
+		add_body(buf.substr(header_end + sep_offset));
 	}
 
 	void Parser::add_start_line(StatusCode::Value code)
@@ -135,7 +137,14 @@ namespace http
 	void Parser::add_body(const std::string &body)
 	{
 		_body = body;
-		append(Defaults::get_header_field(HeaderField::CONTENT_LENGTH), to_string(_body.length()));
+		size_t	len = std::atoll(get_header_value(HeaderField::CONTENT_LENGTH).c_str());
+		if (len >= _body.length())
+		{
+			if (len == _body.length())
+				_match_body_len = true;
+			return ;
+		}
+		set_header_value(HeaderField::CONTENT_LENGTH, to_string(_body.length()));
 	}
 
 	size_t	Parser::find_header_end(const std::string &s)
@@ -210,6 +219,12 @@ namespace http
 		return header;
 	}
 
+	bool Parser::exist(HeaderField::Value val) const
+	{
+		const char *s = Defaults::get_header_field(val);
+		return exist(s);
+	}
+
 	bool Parser::exist(const std::string &s) const
 	{
 		if (_header_fields.find(s) != _header_fields.end())
@@ -225,9 +240,20 @@ namespace http
 		return _header_fields.at(s).front();
 	}
 
+	std::string Parser::get_header_value(HeaderField::Value val) const
+	{
+		const char *s = Defaults::get_header_field(val);
+		return get_header_value(s);
+	}
+
 	const std::string &Parser::get_start_line() const
 	{
 		return _start_line;
+	}
+
+	bool Parser::match_content_len() const
+	{
+		return _match_body_len;
 	}
 
 	bool Parser::get_finished() const
