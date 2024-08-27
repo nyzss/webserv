@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:14:56 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 23:12:37 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ namespace http
 		Server	*server = const_cast<Server*>(serv);
 		SOCKET server_fd = server->get_socketfd();
 
-		EP_EVENT event = build_event(EPOLLIN | EPOLLET, server_fd);
+		EP_EVENT event = build_event(EPOLLIN, server_fd);
 
 		if (epoll_ctl(_instance, EPOLL_CTL_ADD, server_fd, &event) < 0)
 			throw std::runtime_error("fatal: failed to add server to epoll_ctl");
@@ -38,7 +38,7 @@ namespace http
 		start_servers();
 		while (true)
 		{
-			_last_ready = epoll_wait(_instance, _queue, MAX_SERVERS, -1);
+			_last_ready = epoll_wait(_instance, _queue, MAX_SERVERS, 0);
 			if (_last_ready < 0)
 				throw std::runtime_error("fatal: epoll_wait failed!");
 
@@ -102,7 +102,7 @@ namespace http
 		SOCKET	c_socket = client->get_socketfd();
 		_clients.insert(client);
 
-		EP_EVENT event = build_event(EPOLLIN | EPOLLET, client);
+		EP_EVENT event = build_event(EPOLLIN, client);
 
 		if (epoll_ctl(_instance, EPOLL_CTL_ADD, c_socket, &event) < 0)
 			throw std::runtime_error("fatal: failed to add client to epoll_instance!");
@@ -131,7 +131,7 @@ namespace http
 	{
 		EP_EVENT new_event;
 
-		new_event.events = event;
+		new_event.events = event | EPOLLET;
 		new_event.data.fd = fd;
 		return new_event;
 	}
@@ -141,7 +141,7 @@ namespace http
 	{
 		EP_EVENT new_event;
 
-		new_event.events = event;
+		new_event.events = event | EPOLLET;
 		new_event.data.ptr = ptr;
 		return new_event;
 	}
