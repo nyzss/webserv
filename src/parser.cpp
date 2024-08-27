@@ -15,7 +15,9 @@
 #include "utils.hpp"
 #include <cstddef>
 #include <cstring>
+#include <exception>
 #include <string>
+#include <utility>
 
 namespace http
 {
@@ -47,8 +49,76 @@ namespace http
 		return *this;
 	}
 
+	void Parser::normalize(const std::string &buf)
+	{
+		size_t		header_end = find_header_end(buf);
+
+		if (header_end == std::string::npos)
+			return ;
+
+		size_t	sep_offset = _sep == Separator::CRLF ? std::strlen(CRLF_END) : std::strlen(LF_END);
+		std::string	parsed_header = buf.substr(0, header_end + sep_offset);
+
+		size_t	nl_pos = 0;
+		while ((nl_pos = parsed_header.find(CRLF)) != std::string::npos)
+		{
+			parsed_header.replace(nl_pos, 2, LF);
+		}
+
+		std::string	start_line;
+
+		std::string header_cpy = parsed_header;
+		size_t	nl_cpy = header_cpy.find(LF);
+
+
+		start_line = header_cpy.substr(0, nl_cpy);
+		header_cpy.erase(0, nl_cpy + 1);
+
+		while ((nl_cpy = header_cpy.find(LF)) != std::string::npos)
+		{
+			// simple field may look like:  [Content-Type: text/html\n]
+			std::string	header_key_val = header_cpy.substr(0, nl_cpy);
+			if (header_key_val.size() == 0)
+				break ;
+
+			size_t	sep_pos = header_key_val.find(":");
+			std::string	key = header_key_val.substr(0, sep_pos);
+			std::string	val = header_key_val.substr(sep_pos + 2);
+
+			_header_fields[key].push_back(val);
+
+			header_cpy.erase(0, nl_cpy + 1); // removes the LF too
+		}
+
+		std::cout << "START_LINE: [" << start_line << "]\n";
+		std::map<std::string, std::vector<std::string> >::const_iterator it;
+		for (it = _header_fields.begin(); it != _header_fields.end(); it++)
+		{
+			std::cout << "key: [" << (*it).first << "]\n";
+			std::cout << "pairs: ";
+			std::vector<std::string>::const_iterator f;
+			for (f = (*it).second.begin(); f != (*it).second.end(); f++)
+			{
+				std::cout << "\t[" << (*f) << "]\n";
+			}
+		}
+		std::cout << std::endl;
+
+		for (size_t i = 0; i < parsed_header.length(); i++)
+		{
+			if (parsed_header[i] == '\r')
+				std::cout << "\\r";
+			else if (parsed_header[i] == '\n')
+				std::cout << "\\n" << "\n";
+			else
+				std::cout << parsed_header[i];
+		}
+		std::cout << std::endl;
+	}
+
 	Parser::Parser(const std::string &buffer)
 	{
+		normalize(buffer);
 		_raw = buffer;
 		size_t	header_end = find_header_end(_raw);
 

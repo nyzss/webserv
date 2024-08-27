@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 21:54:31 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 09:25:36 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ namespace http
 		std::string			_raw;
 
 		Separator::Value	_sep;
+		std::map<std::string, std::vector<std::string> > _header_fields;
 
 	public:
 		Parser ();
@@ -70,6 +71,8 @@ namespace http
 
 		size_t		find_line_end(const std::string &s, size_t start_pos) const;
 		bool		check_exists(HeaderField::Value val) const;
+
+		void normalize(const std::string &buf);
 	};
 }
 
