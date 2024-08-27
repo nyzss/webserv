@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 14:25:49 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 08:59:55 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 13:40:13 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@ namespace http
 
 	const char *Defaults::_fields[] =
 	{
-		"HTTP/1.1 ",
-		"Content-Type: ",
-		"Content-Length: ",
-		"Connection: ",
+		"HTTP/1.1",
+		"Content-Type",
+		"Content-Length",
+		"Connection",
 	};
 
 	const char *Defaults::_content_type[] =

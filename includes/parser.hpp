@@ -6,11 +6,12 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 09:25:36 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 11:57:52 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+#include <string>
 #ifndef PARSER_HPP
 # define PARSER_HPP
 
@@ -37,9 +38,9 @@ namespace http
 		static const char *LF;
 
 	private:
-		std::string			_header;
 		std::string			_body;
-		std::string			_raw;
+
+		std::string			_start_line;
 
 		Separator::Value	_sep;
 		std::map<std::string, std::vector<std::string> > _header_fields;
@@ -53,26 +54,20 @@ namespace http
 
 	public:
 		void add_start_line(StatusCode::Value code);
-		void add_header_line(HeaderField::Value field, const std::string &line);
-
-		void set_header_line(HeaderField::Value field, const std::string &line);
 		void add_body(const std::string &body);
 
 	public:
-		std::string get_value(HeaderField::Value val) const;
-		std::string get_combine() const;
 		size_t		length() const;
-
-		const std::string &get_header() const;
 		const std::string &get_body() const;
+		void append(const std::string &key, const std::string &value);
+		void append(HeaderField::Value val, const std::string &value);
+		std::string generate() const;
 
 	private:
 		size_t		find_header_end(const std::string &s);
 
-		size_t		find_line_end(const std::string &s, size_t start_pos) const;
-		bool		check_exists(HeaderField::Value val) const;
-
 		void normalize(const std::string &buf);
+		void set_start_line(const std::string &s);
 	};
 }
 

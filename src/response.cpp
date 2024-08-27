@@ -94,21 +94,21 @@ namespace http
 	{
 		std::string	ext = get_extension(_req.get_path());
 		if (!_resource_exists || ext == _req.get_path() || ext == "html")
-			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::HTML));
+			_message.append(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::HTML));
 		else if (ext == "css")
-			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::CSS));
+			_message.append(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::CSS));
 		else if (ext == "js")
-			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::JAVASCRIPT));
+			_message.append(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::JAVASCRIPT));
 		else if (ext == "jpg")
-			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_JPEG));
+			_message.append(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_JPEG));
 		else if (ext == "png")
-			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_PNG));
+			_message.append(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_PNG));
 		else if (ext == "gif")
-			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_GIF));
+			_message.append(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::IMAGE_GIF));
 		else
-			_message.add_header_line(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::HTML));
+			_message.append(HeaderField::CONTENT_TYPE, Defaults::get_content_type(ContentType::HTML));
 
-		_message.add_header_line(HeaderField::CONNECTION, "close");
+		_message.append(HeaderField::CONNECTION, "close");
 
 		if (_resource_exists)
 			_message.add_start_line(StatusCode::OK);
@@ -118,8 +118,8 @@ namespace http
 
 	void Response::write()
 	{
-		// debug();
-		std::string	combine = _message.get_combine();
+		debug();
+		std::string	combine = _message.generate();
 		int r_sd = ::send(_fd, combine.data(), combine.length(), 0);
 		if (r_sd < 0)
 			throw std::runtime_error("client couldn't communicate with server!");
@@ -153,9 +153,7 @@ namespace http
 	void Response::debug() const
 	{
 		std::cout << "\n\n\n--------------- RESPONSE ---------------\n";
-		std::cout << _message.get_combine().substr(0, 150);
-		if (_message.length() > 150)
-			std::cout << "..";
+		std::cout << _message.generate().substr(0, 150);
 	}
 
 	Response & Response::operator=(const Response &val)
