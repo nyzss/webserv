@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 14:18:58 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 14:48:12 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,16 +211,7 @@ namespace http
 	void Request::debug() const
 	{
 		std:: cout << "\n-----------------REQUEST---------------\n" << std::endl;
-		std::cout << _message.generate().substr(0, 100) << std::endl;
-		// std::cout << "\n"
-		// std::cout << "\nheader_len: " << _header.length() << "\n";
-		// std::cout << "-------------------\n "<< _header << "\n--------------------\n";
-		// std::cout << "\nbody_len: " << _body.length() << "\n";
-		// // std::cout << "-------------------\n "<< _body << "\n--------------------\n";
 
-		// std::cout << "content_len: " << _content_length << "\nbody_len: " << _body.size() << "\n";
-		// // std::ofstream s("output.data");
-		// // s.write(_body.data(), _body.size());
-		// std:: cout << "-----------------\nFINISHED\n---------------\n" << std::endl;
+		_message.display_header();
 	}
 }

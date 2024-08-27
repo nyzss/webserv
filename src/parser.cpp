@@ -44,31 +44,6 @@ namespace http
 		return *this;
 	}
 
-	std::string Parser::generate() const
-	{
-		std::string	combination;
-		std::string	new_header;
-
-		// std::cout << _start_line << "_body: " << _body << std::endl;
-
-		new_header.append(_start_line + CRLF);
-		std::map<std::string, std::vector<std::string> >::const_iterator map_it;
-		std::vector<std::string>::const_iterator vec_it;
-		for (map_it = _header_fields.begin(); map_it != _header_fields.end(); map_it++)
-		{
-			for (vec_it = (*map_it).second.begin(); vec_it != (*map_it).second.end(); vec_it++)
-			{
-				std::string header_line = (*map_it).first + ": " + *vec_it + CRLF;
-				new_header.append(header_line);
-			}
-		}
-
-		combination.append(new_header);
-		combination.append(CRLF);
-		combination.append(_body);
-		return combination;
-	}
-
 	void Parser::append(HeaderField::Value val, const std::string &value)
 	{
 		append(Defaults::get_header_field(val), value);
@@ -196,6 +171,50 @@ namespace http
 	const std::string &Parser::get_body() const
 	{
 		return _body;
+	}
+
+	std::string Parser::generate() const
+	{
+		std::string	combination;
+
+		combination.append(generate_header());
+		combination.append(CRLF);
+		combination.append(_body);
+		return combination;
+	}
+
+	void Parser::display_header() const
+	{
+		std::cout << "START_LINE: [" << _start_line << "]\n";
+		std::map<std::string, std::vector<std::string> >::const_iterator it;
+		for (it = _header_fields.begin(); it != _header_fields.end(); it++)
+		{
+			std::cout << "- KEY: {" << (*it).first << "}\n";
+			std::vector<std::string>::const_iterator f;
+			for (f = (*it).second.begin(); f != (*it).second.end(); f++)
+			{
+				std::cout << "\t[" << (*f) << "]\n";
+			}
+		}
+		std::cout << std::endl;
+	}
+
+	std::string Parser::generate_header() const
+	{
+		std::string	header;
+		header.append(_start_line + CRLF);
+
+		std::map<std::string, std::vector<std::string> >::const_iterator map_it;
+		std::vector<std::string>::const_iterator vec_it;
+		for (map_it = _header_fields.begin(); map_it != _header_fields.end(); map_it++)
+		{
+			for (vec_it = (*map_it).second.begin(); vec_it != (*map_it).second.end(); vec_it++)
+			{
+				std::string header_line = (*map_it).first + ": " + *vec_it + CRLF;
+				header.append(header_line);
+			}
+		}
+		return header;
 	}
 
 	bool Parser::exist(const std::string &s) const

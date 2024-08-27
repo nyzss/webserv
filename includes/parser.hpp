@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 14:36:34 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 14:45:17 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,9 @@ namespace http
 
 		size_t		length() const;
 		std::string generate() const;
+		std::string generate_header() const;
+
+		void display_header() const;
 
 		const std::string &get_body() const;
 		const std::string &get_start_line() const;
