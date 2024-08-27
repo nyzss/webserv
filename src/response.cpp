@@ -152,8 +152,8 @@ namespace http
 
 	void Response::debug() const
 	{
-		std::cout << "\n\n\n--------------- RESPONSE ---------------\n";
-		std::cout << _message.generate().substr(0, 150);
+		std::cout << "\n\n--------------- RESPONSE ---------------\n";
+		_message.display_header();
 	}
 
 	Response & Response::operator=(const Response &val)
