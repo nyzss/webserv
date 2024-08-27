@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "parser.hpp"
 #include "defaults.hpp"
 #include "webserv.hpp"
 
@@ -23,7 +24,7 @@ namespace http
 
 	Parser::Parser()
 	{
-		_sep = Separator::CRLF;
+		_sep = Separator::NONE;
 	}
 
 	Parser::Parser (const Parser &val)
@@ -153,6 +154,7 @@ namespace http
 
 	Parser::Parser(const std::string &buffer)
 	{
+		_sep = Separator::NONE;
 		normalize(buffer);
 	}
 
@@ -195,6 +197,32 @@ namespace http
 	{
 		return _body;
 	}
+
+	bool Parser::exist(const std::string &s) const
+	{
+		if (_header_fields.find(s) != _header_fields.end())
+			return true;
+		return false;
+	}
+
+	std::string Parser::get_header_value(const std::string &s) const
+	{
+		if (_header_fields.find(s) == _header_fields.end())
+			return "";
+
+		return _header_fields.at(s).front();
+	}
+
+	const std::string &Parser::get_start_line() const
+	{
+		return _start_line;
+	}
+
+	bool Parser::get_finished() const
+	{
+		return _sep != Separator::NONE;
+	}
+
 
 	Parser::~Parser()
 	{ }

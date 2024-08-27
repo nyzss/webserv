@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 11:57:52 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 14:36:34 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ namespace http
 			enum Value
 			{
 				CRLF,
-				LF
+				LF,
+				NONE
 			};
 		};
 	private:
@@ -41,7 +42,6 @@ namespace http
 		std::string			_body;
 
 		std::string			_start_line;
-
 		Separator::Value	_sep;
 		std::map<std::string, std::vector<std::string> > _header_fields;
 
@@ -57,11 +57,18 @@ namespace http
 		void add_body(const std::string &body);
 
 	public:
-		size_t		length() const;
-		const std::string &get_body() const;
 		void append(const std::string &key, const std::string &value);
 		void append(HeaderField::Value val, const std::string &value);
+
+		size_t		length() const;
 		std::string generate() const;
+
+		const std::string &get_body() const;
+		const std::string &get_start_line() const;
+		std::string get_header_value(const std::string &s) const;
+		bool exist(const std::string &s) const;
+
+		bool get_finished() const;
 
 	private:
 		size_t		find_header_end(const std::string &s);

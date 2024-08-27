@@ -15,6 +15,7 @@
 # define REQUEST_HPP
 
 #include <common.hpp>
+#include <parser.hpp>
 
 # define DEFAULT_READ 5120
 
@@ -32,11 +33,13 @@ namespace http
 		};
 	private:
 		std::string	_buffer;
-		std::string	_header;
-		std::string	_body;
+
+		Parser	_message;
 		SOCKET	_fd;
+
 		static const char *_methods_arr[];
 		static const std::string	separator;
+
 		size_t	_needed_size;
 		size_t	_current_size;
 		bool	_finished;
@@ -46,7 +49,6 @@ namespace http
 		method		_method;
 		size_t		_content_length;
 		std::string	_path;
-		std::string	_content_type;
 
 	public:
 		Request ();

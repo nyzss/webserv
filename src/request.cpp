@@ -6,11 +6,12 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 13:48:24 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 14:18:58 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "defaults.hpp"
+#include <cstddef>
 #include <webserv.hpp>
 
 namespace http
@@ -57,9 +58,7 @@ namespace http
 			this->_buffer = val._buffer;
 			this->_fd = val._fd;
 			this->_content_length = val._content_length;
-			this->_content_type = val._content_type;
-			this->_header = val._header;
-			this->_body = val._body;
+			this->_message = val._message;
 		}
 		return *this;
 	}
@@ -84,42 +83,13 @@ namespace http
 
 	void	Request::check_buffer()
 	{
-		size_t header_end_pos = _buffer.find(separator);
-		if (!_header_finished)
-		{
-			if (header_end_pos == std::string::npos)
-				return;
-			_header_finished = true;
-		}
-		_header = _buffer.substr(0, header_end_pos);
-		_body = _buffer.substr(header_end_pos + separator.length());
-	}
-
-	std::string	Request::find_field(const std::string &field_name)
-	{
-		size_t	field_pos = _header.find(field_name);
-		if (field_pos != std::string::npos)
-		{
-			std::string	field;
-
-			field_pos += field_name.length();
-			size_t field_end = _header.find("\r\n", field_pos);
-			field = _header.substr(field_pos, field_end - field_pos);
-			// std::cout << field_name << ": " << "[" << field << "]" << std::endl;
-			return field;
-		}
-		return "n/a";
+		_message = _buffer;
+		_header_finished = _message.get_finished();
 	}
 
 	void	Request::handle_header()
 	{
-		std::string	first_line;
-		size_t pos = 0;
-		if ((pos = _header.find('\n')) == std::string::npos)
-			throw std::runtime_error("no line found in request");
-
-		first_line = _header.substr(0, pos);
-		std::vector<std::string> tokens = ws_split(first_line, ' ');
+		std::vector<std::string> tokens = ws_split(_message.get_start_line(), ' ');
 		if (tokens.size() < 3)
 			throw std::runtime_error("request received has invalid request line");
 		for (int i = 0; i <= LAST; i++)
@@ -131,14 +101,13 @@ namespace http
 			this->_path = "/index.html";
 		else
 			this->_path = tokens[1];
-
-		_content_type = find_field(Defaults::get_header_field(http::HeaderField::CONTENT_TYPE));
-		_content_length = std::atoll(find_field(Defaults::get_header_field(http::HeaderField::CONTENT_LENGTH)).c_str());
 	}
 
 	void Request::handle_body()
 	{
-		if (_body.length() == _content_length || _content_length == 0)
+		const std::string &content_len = _message.get_header_value(Defaults::get_header_field(HeaderField::CONTENT_LENGTH));
+		size_t	len = std::atoll(content_len.c_str());
+		if (_message.get_body().length() == len || len == 0)
 			_finished = true;
 	}
 
@@ -146,7 +115,7 @@ namespace http
 	{
 		receive();
 		check_buffer();
-		if (_header_finished == true)
+		if (_header_finished)
 		{
 			handle_header();
 			handle_body();
@@ -161,7 +130,7 @@ namespace http
 	// for simple post requests, to write the whole body inside output file
 	void Request::handle_raw_bytes_post(const char *filename) const
 	{
-		handle_raw_bytes_post(filename, _body);
+		handle_raw_bytes_post(filename, _message.get_body());
 	}
 
 	// for more complex post requests, only writes the `data` inside the output file
@@ -183,29 +152,31 @@ namespace http
 		if (_method != POST)
 			return ;
 
-		if (_content_type.find(Defaults::get_content_type(ContentType::FORMDATA)) != std::string::npos)
+		const std::string &content_type = _message.get_header_value(Defaults::get_header_field(HeaderField::CONTENT_TYPE));
+
+		if (content_type.find(Defaults::get_content_type(ContentType::FORMDATA)) != std::string::npos)
 			std::cout << "MULTIPART_FOMR_DATA POST REACHED()" << std::endl;
-		else if (_content_type == Defaults::get_content_type(ContentType::OCTEC_STREAM))
+		else if (content_type == Defaults::get_content_type(ContentType::OCTEC_STREAM))
 		{
 			handle_raw_bytes_post("raw_data");
 			std::cout << "OCTET_STREAM REACHED" << std::endl;
 		}
-		else if (_content_type == Defaults::get_content_type(ContentType::IMAGE_JPEG))
+		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_JPEG))
 		{
 			handle_raw_bytes_post("img.jpg");
 			std::cout << "IMAGE_JPEG REACHED" << std::endl;
 		}
-		else if (_content_type == Defaults::get_content_type(ContentType::IMAGE_PNG))
+		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_PNG))
 		{
 			handle_raw_bytes_post("img.png");
 			std::cout << "IMAGE_PNG REACHED" << std::endl;
 		}
-		else if (_content_type == Defaults::get_content_type(ContentType::IMAGE_WEBP))
+		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_WEBP))
 		{
 			handle_raw_bytes_post("img.webp");
 			std::cout << "IMAGE_WEBP REACHED" << std::endl;
 		}
-		else if (_content_type == Defaults::get_content_type(ContentType::IMAGE_GIF))
+		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_GIF))
 		{
 			handle_raw_bytes_post("img.gif");
 			std::cout << "IMAGE_GIF REACHED" << std::endl;
@@ -239,15 +210,17 @@ namespace http
 
 	void Request::debug() const
 	{
-		std::cout << "\nheader_len: " << _header.length() << "\n";
-		std::cout << "-------------------\n "<< _header << "\n--------------------\n";
-		std::cout << "\nbody_len: " << _body.length() << "\n";
-		// std::cout << "-------------------\n "<< _body << "\n--------------------\n";
+		std:: cout << "\n-----------------REQUEST---------------\n" << std::endl;
+		std::cout << _message.generate().substr(0, 100) << std::endl;
+		// std::cout << "\n"
+		// std::cout << "\nheader_len: " << _header.length() << "\n";
+		// std::cout << "-------------------\n "<< _header << "\n--------------------\n";
+		// std::cout << "\nbody_len: " << _body.length() << "\n";
+		// // std::cout << "-------------------\n "<< _body << "\n--------------------\n";
 
-
-		std::cout << "content_len: " << _content_length << "\nbody_len: " << _body.size() << "\n";
-		// std::ofstream s("output.data");
-		// s.write(_body.data(), _body.size());
-		std:: cout << "-----------------\nFINISHED\n---------------\n" << std::endl;
+		// std::cout << "content_len: " << _content_length << "\nbody_len: " << _body.size() << "\n";
+		// // std::ofstream s("output.data");
+		// // s.write(_body.data(), _body.size());
+		// std:: cout << "-----------------\nFINISHED\n---------------\n" << std::endl;
 	}
 }
