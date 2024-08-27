@@ -59,33 +59,20 @@ namespace http
 		_start_line = s;
 	}
 
-	void Parser::normalize(const std::string &buf)
+	void Parser::parse_buffer(std::string buf)
 	{
-		size_t		header_end = find_header_end(buf);
+		size_t	nl_cpy = buf.find(LF);
 
-		if (header_end == std::string::npos)
-			return ;
-
-		size_t	sep_offset = _sep == Separator::CRLF ? std::strlen(CRLF_END) : std::strlen(LF_END);
-		std::string	parsed_header = buf.substr(0, header_end + sep_offset);
-		_body = buf.substr(header_end + sep_offset);
-
-		size_t	nl_pos = 0;
-		while ((nl_pos = parsed_header.find(CRLF)) != std::string::npos)
+		if (buf.find(Defaults::get_header_field(HeaderField::VERSION)) != std::string::npos)
 		{
-			parsed_header.replace(nl_pos, 2, LF);
+			_start_line = buf.substr(0, nl_cpy);
+			buf.erase(0, nl_cpy + 1);
 		}
 
-		std::string header_cpy = parsed_header;
-		size_t	nl_cpy = header_cpy.find(LF);
-
-		_start_line = header_cpy.substr(0, nl_cpy);
-		header_cpy.erase(0, nl_cpy + 1);
-
-		while ((nl_cpy = header_cpy.find(LF)) != std::string::npos)
+		while ((nl_cpy = buf.find(LF)) != std::string::npos)
 		{
 			// simple field may look like:  [Content-Type: text/html\n]
-			std::string	header_key_val = header_cpy.substr(0, nl_cpy);
+			std::string	header_key_val = buf.substr(0, nl_cpy);
 			if (header_key_val.size() == 0)
 				break ;
 
@@ -95,22 +82,28 @@ namespace http
 
 			_header_fields[key].push_back(val);
 
-			header_cpy.erase(0, nl_cpy + 1); // removes the LF too
+			buf.erase(0, nl_cpy + 1); // removes the LF too
+		}
+	}
+
+	void Parser::handle_buffer(const std::string &buf)
+	{
+		size_t		header_end = find_header_end(buf);
+
+		if (header_end == std::string::npos)
+			return ;
+
+		size_t	sep_offset = _sep == Separator::CRLF ? std::strlen(CRLF_END) : std::strlen(LF_END);
+		std::string	parsed_header = buf.substr(0, header_end + sep_offset);
+		add_body(buf.substr(header_end + sep_offset));
+
+		size_t	nl_pos = 0;
+		while ((nl_pos = parsed_header.find(CRLF)) != std::string::npos)
+		{
+			parsed_header.replace(nl_pos, 2, LF);
 		}
 
-		// std::cout << "START_LINE: [" << _start_line << "]\n";
-		// std::map<std::string, std::vector<std::string> >::const_iterator it;
-		// for (it = _header_fields.begin(); it != _header_fields.end(); it++)
-		// {
-		// 	std::cout << "key: [" << (*it).first << "]\n";
-		// 	std::cout << "pairs: ";
-		// 	std::vector<std::string>::const_iterator f;
-		// 	for (f = (*it).second.begin(); f != (*it).second.end(); f++)
-		// 	{
-		// 		std::cout << "\t[" << (*f) << "]\n";
-		// 	}
-		// }
-		// std::cout << std::endl;
+		parse_buffer(parsed_header);
 
 		// // for (size_t i = 0; i < parsed_header.length(); i++)
 		// // {
@@ -130,7 +123,7 @@ namespace http
 	Parser::Parser(const std::string &buffer)
 	{
 		_sep = Separator::NONE;
-		normalize(buffer);
+		handle_buffer(buffer);
 	}
 
 	void Parser::add_start_line(StatusCode::Value code)

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 14:45:17 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 14:58:26 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ namespace http
 	private:
 		size_t		find_header_end(const std::string &s);
 
-		void normalize(const std::string &buf);
+		void handle_buffer(const std::string &buf);
+		void parse_buffer(std::string buf);
 		void set_start_line(const std::string &s);
 	};
 }
