@@ -75,7 +75,6 @@ namespace http
 			cgi_buffer.append(buf, b_read);
 		close(fd[0]);
 
-
 		_message = cgi_buffer;
 		_message.add_start_line(StatusCode::OK);
 	}

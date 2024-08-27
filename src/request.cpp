@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 14:48:12 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/27 15:31:39 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,5 +213,6 @@ namespace http
 		std:: cout << "\n-----------------REQUEST---------------\n" << std::endl;
 
 		_message.display_header();
+		std::cout << "BODY_LEN: " << _message.get_body().length() << std::endl;;
 	}
 }

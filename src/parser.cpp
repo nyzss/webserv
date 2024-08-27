@@ -32,6 +32,12 @@ namespace http
 		*this = val;
 	}
 
+	Parser::Parser(const std::string &buffer)
+	{
+		_sep = Separator::NONE;
+		handle_buffer(buffer);
+	}
+
 	Parser &Parser::operator=(const Parser &val)
 	{
 		if (this != &val)
@@ -118,12 +124,6 @@ namespace http
 		// std::cout << "parsed http: " << parsed_header << std::endl;
 
 		// std::cout << "GENERATED HTTP: " << generate() << std::endl;
-	}
-
-	Parser::Parser(const std::string &buffer)
-	{
-		_sep = Separator::NONE;
-		handle_buffer(buffer);
 	}
 
 	void Parser::add_start_line(StatusCode::Value code)
@@ -234,7 +234,6 @@ namespace http
 	{
 		return _sep != Separator::NONE;
 	}
-
 
 	Parser::~Parser()
 	{ }
