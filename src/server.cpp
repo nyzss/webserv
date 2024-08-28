@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 10:48:59 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:09:23 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 18:26:29 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,9 @@ namespace http
 
 		non_blocking();
 		int	opt = 1;
-		int r_sockopt1 = setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-		if (r_sockopt1 < 0)
+		if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 			throw std::runtime_error("Couldnt change socket options (address)!");
-		int r_sockopt2 = setsockopt(_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-		if (r_sockopt2 < 0)
+		if (setsockopt(_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) < 0)
 			throw std::runtime_error("Couldnt change socket options (port)!");
 
 		this->_data.sin_family = AF_INET;
@@ -51,16 +49,13 @@ namespace http
 
 	void	Server::start_server()
 	{
-		int r_bind = bind(this->_fd, (sockaddr *)&this->_data, sizeof(this->_data));
-		if (r_bind < 0)
+		if (bind(this->_fd, (sockaddr *)&this->_data, sizeof(this->_data)) < 0)
 		{
 			// perror("bind error");
 			log_err("Couldn't bind server.", *this);
 			throw std::runtime_error("bind error in start_server");
 		}
-
-		int r_listen = listen(this->_fd, MAX_CONNECTION_POOL);
-		if (r_listen < 0)
+		if (listen(this->_fd, MAX_CONNECTION_POOL) < 0)
 		{
 			// perror("listen error");
 			log_err("Couldn't listen on server address/port.", *this);
