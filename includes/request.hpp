@@ -43,7 +43,6 @@ namespace http
 		size_t	_needed_size;
 		size_t	_current_size;
 		bool	_finished;
-		bool	_header_finished;
 
 	private:
 		method		_method;
@@ -63,10 +62,7 @@ namespace http
 
 	private:
 		void receive();
-		void check_buffer();
-
 		void handle_header();
-		void handle_body();
 		void debug() const;
 
 		std::string find_field(const std::string &field_name);

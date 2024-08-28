@@ -6,12 +6,14 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 16:22:09 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 11:47:45 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "request.hpp"
 #include "defaults.hpp"
 #include <cstddef>
+#include <stdexcept>
 #include <webserv.hpp>
 
 namespace http
@@ -25,7 +27,6 @@ namespace http
 		_needed_size = 0;
 		_current_size = 0;
 		_finished = false;
-		_header_finished = false;
 		_content_length = 0;
 		_fd = -1;
 	}
@@ -34,7 +35,6 @@ namespace http
 	{
 		_fd = sockfd;
 		_finished = false;
-		_header_finished = false;
 		_current_size = 0;
 		_needed_size = 0;
 		_content_length = (0);
@@ -54,7 +54,6 @@ namespace http
 			this->_current_size = val._current_size;
 			this->_needed_size = val._needed_size;
 			this->_finished = val._finished;
-			this->_header_finished = val._header_finished;
 			this->_buffer = val._buffer;
 			this->_fd = val._fd;
 			this->_content_length = val._content_length;
@@ -69,22 +68,29 @@ namespace http
 
 	void	Request::receive()
 	{
+		char _buf[DEFAULT_READ];
+
 		if (this->_fd < 0)
 			throw std::runtime_error("trying to read request with no fd");
-		char _buf[DEFAULT_READ];
-		ssize_t bytes = recv(this->_fd, _buf, DEFAULT_READ, 0);
-		if (bytes < 0)
-		{
-			perror("recv");
-			throw std::runtime_error("failed to read request: recv error");
-		}
-		_buffer.append(_buf, bytes);
-	}
 
-	void	Request::check_buffer()
-	{
-		_message = _buffer;
-		_header_finished = _message.get_finished();
+		ssize_t bytes = recv(this->_fd, _buf, DEFAULT_READ, 0);
+
+		// if bytes == DEFAULT_READ -> then process the header once,
+		// check for methods and stuff, if valid then continue
+		// if not then return error and remove fd from epoll_ctl
+
+		if (bytes > 0)
+		{
+			_buffer.append(_buf, bytes);
+			if (bytes < DEFAULT_READ)
+				_finished = true;
+		}
+		else if (bytes == 0)
+			_finished = true;
+		else if (bytes < 0)
+		{
+			throw std::runtime_error("recv returned < 0");
+		}
 	}
 
 	void	Request::handle_header()
@@ -103,25 +109,15 @@ namespace http
 			this->_path = tokens[1];
 	}
 
-	void Request::handle_body()
-	{
-		if (_message.match_content_len())
-			_finished = true;
-	}
-
 	void	Request::read()
 	{
 		receive();
-		check_buffer();
-		if (_header_finished)
-		{
-			handle_header();
-			handle_body();
-		}
 		if (_finished)
 		{
-			debug();
+			_message = _buffer;
+			handle_header();
 			handle_post();
+			debug();
 		}
 	}
 

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 23:12:37 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 11:51:16 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,13 @@ namespace http
 		SOCKET socket_fd = client->get_socketfd();
 		bool finished = client->get_finished();
 
-		epoll_event event = build_event(finished ? EPOLLOUT : EPOLLIN, client);
+		if (finished)
+		{
+			epoll_event event = build_event(EPOLLOUT, client);
 
-		if (epoll_ctl(_instance, EPOLL_CTL_MOD, socket_fd, &event) < 0)
-			throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+			if (epoll_ctl(_instance, EPOLL_CTL_MOD, socket_fd, &event) < 0)
+				throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+		}
 	}
 
 	void	Cluster::write_client(Client *client)
