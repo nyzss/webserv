@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:53:50 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 12:20:51 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 20:41:45 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,39 @@ namespace http
 {
 	class Cluster
 	{
-	public:
+	// EPOLL FD MANAGEMENT HELPERS
+	private:
+		enum	EP_TYPE
+		{
+			EP_SERVER,
+			EP_CLIENT,
+			EP_RESOURCE,
+			EP_CGI
+		};
+
+		struct	EP_INFO
+		{
+			SOCKET	fd;
+			EP_TYPE	type;
+			void*	ptr;
+		};
+
+	// MAIN TYPEDEFS
+	private:
 		typedef int			EP_FD;
 		typedef epoll_event	EP_EVENT;
 
-		typedef std::vector<Server*>::iterator			s_iter;
-		typedef std::vector<Server*>::const_iterator	s_const_iter;
-
-		typedef std::set<Client*>::iterator			c_iter;
-		typedef std::set<Client*>::const_iterator	c_const_iter;
+		typedef std::map<SOCKET, EP_INFO>::iterator			iter;
+		typedef std::map<SOCKET, EP_INFO>::const_iterator	const_iter;
 
 	private:
 		EP_FD		_instance;
 		EP_FD		_last_ready;
 		EP_EVENT	_queue[MAX_SERVERS];
 
+	// UNDERLYING CONTAINER
 	private:
-		std::vector<Server*> _servers;
-		std::set<Client *> _clients;
-
-	private:
-		// Cluster (const Cluster &val);
-		// Cluster & operator=(const Cluster &val);
+		std::map<SOCKET, EP_INFO>	_data;
 
 	public:
 		Cluster ();
@@ -54,17 +65,15 @@ namespace http
 	// UTILITY
 	private:
 		EP_EVENT	build_event(uint32_t event, SOCKET fd);
-		template <typename T> EP_EVENT	build_event(uint32_t event, T* ptr);
 
-		bool is_server(SOCKET fd);
+		void add_data(SOCKET fd, EP_TYPE type, void *ptr);
 
 	private:
-		void add_client(const Client *serv);
 		void start_servers();
 		void handle_events();
 
+		void add_client(const Client *serv);
 		void handle_new_client(SOCKET socket_fd);
-
 		void read_client(Client *client);
 		void write_client(Client *client);
 

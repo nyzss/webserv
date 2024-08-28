@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 12:28:42 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 20:39:57 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ namespace http
 		Server	*server = const_cast<Server*>(serv);
 		SOCKET server_fd = server->get_socketfd();
 
+		add_data(server_fd, EP_SERVER, server);
 		EP_EVENT event = build_event(EPOLLIN, server_fd);
 
 		if (epoll_ctl(_instance, EPOLL_CTL_ADD, server_fd, &event) < 0)
 			throw std::runtime_error("fatal: failed to add server to epoll_ctl");
-		_servers.push_back(server);
 	}
 
 	void Cluster::start()
@@ -50,24 +50,22 @@ namespace http
 	{
 		for (int i = 0; i < _last_ready; i++)
 		{
-			EP_EVENT current = _queue[i];
+			EP_EVENT	current = _queue[i];
+			EP_INFO		data = _data[current.data.fd];
 
-			SOCKET socket_fd = current.data.fd;
-			if (is_server(socket_fd)) // SERVER
+			if (data.type == EP_SERVER) // SERVER
 			{
-				handle_new_client(socket_fd);
+				handle_new_client(data.fd);
 			}
 			else // CLIENT HANDLING HERE
 			{
-				if (current.data.ptr == NULL)
-					throw std::runtime_error("no client ptr found in epoll_queue");
 				if (current.events & EPOLLIN) // CLIENT REQUEST
 				{
-					read_client(static_cast<Client*>(current.data.ptr));
+					read_client(static_cast<Client*>(data.ptr));
 				}
 				else if (current.events & EPOLLOUT) // CLIENT RESPONSE
 				{
-					write_client(static_cast<Client*>(current.data.ptr));
+					write_client(static_cast<Client*>(data.ptr));
 				}
 			}
 		}
@@ -78,11 +76,20 @@ namespace http
 		client->request();
 
 		SOCKET socket_fd = client->get_socketfd();
-		bool finished = client->get_finished();
 
+		bool finished = client->get_finished();
+		// bool resource = client->has_resource();
+
+		// if (resource)
+		// {
+		// 	epoll_event event = build_event(EPOLLOUT, client);
+
+		// 	if (epoll_ctl(_instance, EPOLL_CTL_ADD, resource_fd, &event) < 0)
+		// 		throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+		// }
 		if (finished)
 		{
-			epoll_event event = build_event(EPOLLOUT, client);
+			epoll_event event = build_event(EPOLLOUT, socket_fd);
 
 			if (epoll_ctl(_instance, EPOLL_CTL_MOD, socket_fd, &event) < 0)
 				throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
@@ -96,38 +103,30 @@ namespace http
 		if (epoll_ctl(_instance, EPOLL_CTL_DEL, socket_fd, NULL) < 0)
 			throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
 		delete client;
-		_clients.erase(client);
+		_data.erase(socket_fd);
 	}
 
 	void Cluster::handle_new_client(SOCKET socket_fd)
 	{
 		Client	*client = new Client(socket_fd);
 		SOCKET	c_socket = client->get_socketfd();
-		_clients.insert(client);
 
-		EP_EVENT event = build_event(EPOLLIN, client);
+		add_data(c_socket, EP_CLIENT, client);
+		EP_EVENT event = build_event(EPOLLIN, c_socket);
 
 		if (epoll_ctl(_instance, EPOLL_CTL_ADD, c_socket, &event) < 0)
 			throw std::runtime_error("fatal: failed to add client to epoll_instance!");
 	}
 
-	bool Cluster::is_server(SOCKET fd)
-	{
-		s_const_iter it;
-
-		for (it = _servers.begin(); it != _servers.end(); it++)
-		{
-			if ((*(*it)) == fd)
-				return true;
-		}
-		return false;
-	}
-
 	void Cluster::start_servers()
 	{
-		s_iter	it;
-		for (it = _servers.begin(); it != _servers.end(); it++)
-			(*it)->start_server();
+		for (iter it = _data.begin(); it != _data.end(); it++)
+		{
+			if ((*it).second.type == EP_SERVER)
+			{
+				static_cast<Server*>((*it).second.ptr)->start_server();
+			}
+		}
 	}
 
 	Cluster::EP_EVENT	Cluster::build_event(uint32_t event, SOCKET fd)
@@ -139,14 +138,16 @@ namespace http
 		return new_event;
 	}
 
-	template <typename T>
-	Cluster::EP_EVENT	Cluster::build_event(uint32_t event, T *ptr)
+	void Cluster::add_data(SOCKET fd, EP_TYPE type, void *ptr)
 	{
-		EP_EVENT new_event;
+		EP_INFO	ep;
 
-		new_event.events = event;
-		new_event.data.ptr = ptr;
-		return new_event;
+		ep.fd = fd;
+		ep.ptr = ptr;
+		ep.type = type;
+		if (_data.find(ep.fd) != _data.end())
+			throw std::runtime_error("_data: fd already exists");
+		_data[ep.fd] = ep;
 	}
 
 	Cluster::~Cluster()
@@ -157,13 +158,19 @@ namespace http
 
 	void Cluster::destroy_sockets()
 	{
-		s_const_iter it;
-		for (it = _servers.begin(); it != _servers.end(); it++)
-			delete *it;
+		for (const_iter it = _data.begin(); it != _data.end(); it++)
+		{
+			EP_INFO curr = (*it).second;
 
-		c_const_iter c_it;
-		for (c_it = _clients.begin(); c_it != _clients.end(); c_it++)
-			delete *c_it;
+			if (curr.type == EP_SERVER)
+			{
+				delete static_cast<Server*>(curr.ptr);
+			}
+			else if (curr.type == EP_CLIENT)
+			{
+				delete static_cast<Client*>(curr.ptr);
+			}
+		}
 	}
 
 	void Cluster::close_instance()
