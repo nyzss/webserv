@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 11:47:45 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 12:57:16 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,7 @@ namespace http
 		if (bytes > 0)
 		{
 			_buffer.append(_buf, bytes);
-			if (bytes < DEFAULT_READ)
-				_finished = true;
+			_message = _buffer;
 		}
 		else if (bytes == 0)
 			_finished = true;
@@ -112,12 +111,15 @@ namespace http
 	void	Request::read()
 	{
 		receive();
-		if (_finished)
+		if (_message.get_finished() || _finished)
 		{
-			_message = _buffer;
-			handle_header();
-			handle_post();
-			debug();
+			if (_message.match_content_len())
+			{
+				_finished = true;
+				handle_header();
+				handle_post();
+				debug();
+			}
 		}
 	}
 
@@ -207,6 +209,6 @@ namespace http
 		std:: cout << "\n-----------------REQUEST---------------\n" << std::endl;
 
 		_message.display_header();
-		std::cout << "BODY_LEN: " << _message.get_body().length() << std::endl;;
+		std::cout << "- BODY_LEN: [" << _message.get_body().length() << "]" << std::endl;;
 	}
 }
