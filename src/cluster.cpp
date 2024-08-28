@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 11:51:16 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 12:28:42 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ namespace http
 	{
 		EP_EVENT new_event;
 
-		new_event.events = event | EPOLLET;
+		new_event.events = event;
 		new_event.data.fd = fd;
 		return new_event;
 	}
@@ -144,7 +144,7 @@ namespace http
 	{
 		EP_EVENT new_event;
 
-		new_event.events = event | EPOLLET;
+		new_event.events = event;
 		new_event.data.ptr = ptr;
 		return new_event;
 	}

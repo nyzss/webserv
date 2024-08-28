@@ -77,6 +77,7 @@ namespace http
 
 		_message = cgi_buffer;
 		_message.add_start_line(StatusCode::OK);
+		_message.append(HeaderField::CONNECTION, "close");
 	}
 
 	void	Response::check_cgi()
@@ -121,7 +122,7 @@ namespace http
 		std::string	combine = _message.generate();
 		int r_sd = ::send(_fd, combine.data(), combine.length(), 0);
 		if (r_sd < 0)
-			throw std::runtime_error("client couldn't communicate with server!");
+			throw std::runtime_error("SHOULD SEND BACK SERVER ERROR HERE 500");
 	}
 
 	void Response::read_file(std::ifstream &file)

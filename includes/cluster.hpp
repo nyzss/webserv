@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:53:50 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:05:23 by okoca            ###   ########.fr       */
+/*   Updated: 2024/08/28 12:20:51 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <server.hpp>
 #include <client.hpp>
 
-# define MAX_SERVERS 16
+# define MAX_SERVERS 64
 
 namespace http
 {
