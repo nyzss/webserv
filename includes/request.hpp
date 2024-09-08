@@ -40,9 +40,11 @@ namespace http
 		static const char			*_methods_arr[];
 		static const std::string	separator;
 
-		size_t	_needed_size;
-		size_t	_current_size;
+		size_t	_written;
 		bool	_finished;
+		FD		_upload_fd;
+
+		bool	_upload_queued;
 
 	private:
 		method		_method;
@@ -58,6 +60,7 @@ namespace http
 
 	public:
 		bool read();
+		bool write_upload();
 
 	private:
 		void receive();
@@ -67,8 +70,8 @@ namespace http
 		std::string find_field(const std::string &field_name);
 
 	private:
-		void handle_post() const;
-		void handle_raw_bytes_post(const char *filename) const;
+		void handle_post();
+		void handle_open_file(const char *filename);
 
 	public:
 		std::string	get_path() const;

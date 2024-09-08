@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 14:02:02 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 15:05:10 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,11 @@ namespace http
 		return _req.read();
 	}
 
+	bool	Client::upload()
+	{
+		return _req.write_upload();
+	}
+
 	void	Client::response()
 	{
 		_res.send();
@@ -61,6 +66,16 @@ namespace http
 		if (_fd != -1)
 			close(_fd);
 		_fd = -1;
+	}
+
+	bool	Client::get_upload_status() const
+	{
+		return _req._upload_queued;
+	}
+
+	FD	Client::get_upload_fd() const
+	{
+		return _req._upload_fd;
 	}
 
 	void	Client::debug() const

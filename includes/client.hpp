@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:34:53 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 14:01:58 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 15:04:58 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ namespace http
 	class Client : public Socket
 	{
 	private:
-		Response	_res;
 		Request		_req;
+		Response	_res;
 		SOCKET		_server_sock;
 		socklen_t	_sock_len;
 
@@ -40,8 +40,13 @@ namespace http
 	public:
 		void	reset();
 		bool	request();
+		bool	upload();
 		void	response();
 		void	get_connection();
+
+	public:
+		bool	get_upload_status() const;
+		FD		get_upload_fd() const;
 
 	private:
 		void	debug() const;

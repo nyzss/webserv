@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:19:18 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/24 14:03:37 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 14:31:58 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 #include <ctime>
 
 typedef int	SOCKET;
+typedef int	FD;
 typedef int	PORT;
 
 #endif /* COMMON_HPP */

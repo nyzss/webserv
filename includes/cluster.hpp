@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:53:50 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 14:06:55 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 15:04:30 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ namespace http
 		EP_EVENT	build_event(uint32_t event, SOCKET fd);
 
 		void add_data(SOCKET fd, EP_TYPE type, void *ptr);
+		void add_data(SOCKET id, SOCKET stored_fd, EP_TYPE type, void *ptr);
 
 		void ctl(int op, SOCKET fd, EP_EVENT* event);
 
@@ -78,6 +79,11 @@ namespace http
 		void handle_new_client(SOCKET socket_fd);
 		void read_client(Client *client);
 		void write_client(Client *client);
+
+
+	// RESOURCES
+	public:
+		void write_upload(Client *client);
 
 	public:
 		void add_server(const Server *serv);

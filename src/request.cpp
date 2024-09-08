@@ -6,13 +6,14 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 13:55:31 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 15:19:00 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "request.hpp"
-#include "defaults.hpp"
+#include <bits/types/cookie_io_functions_t.h>
 #include <cstddef>
+#include <fcntl.h>
 #include <stdexcept>
 #include <webserv.hpp>
 
@@ -24,20 +25,23 @@ namespace http
 	Request::Request()
 	{
 		_method = GET;
-		_needed_size = 0;
-		_current_size = 0;
+		_written = 0;
 		_finished = false;
 		_content_length = 0;
 		_fd = -1;
+		_upload_queued = false;
+		_upload_fd = -1;
 	}
 
 	Request::Request(SOCKET sockfd)
 	{
-		_fd = sockfd;
+		_method = GET;
+		_written = 0;
 		_finished = false;
-		_current_size = 0;
-		_needed_size = 0;
-		_content_length = (0);
+		_content_length = 0;
+		_fd = sockfd;
+		_upload_queued = false;
+		_upload_fd = -1;
 	}
 
 	Request::Request(const Request &val)
@@ -51,20 +55,19 @@ namespace http
 		{
 			this->_method = val._method;
 			this->_path = val._path;
-			this->_current_size = val._current_size;
-			this->_needed_size = val._needed_size;
+			this->_written = val._written;
 			this->_finished = val._finished;
 			this->_buffer = val._buffer;
 			this->_fd = val._fd;
 			this->_content_length = val._content_length;
 			this->_message = val._message;
+			this->_upload_queued = val._upload_queued;
+			this->_upload_fd = val._upload_fd;
 		}
 		return *this;
 	}
 
-	Request::~Request()
-	{
-	}
+	Request::~Request() {}
 
 	void	Request::receive()
 	{
@@ -74,10 +77,6 @@ namespace http
 			throw std::runtime_error("trying to read request with no fd");
 
 		ssize_t bytes = recv(this->_fd, _buf, DEFAULT_READ, 0);
-
-		// if bytes == DEFAULT_READ -> then process the header once,
-		// check for methods and stuff, if valid then continue
-		// if not then return error and remove fd from epoll_ctl
 
 		if (bytes > 0)
 		{
@@ -126,21 +125,39 @@ namespace http
 		return false;
 	}
 
-	// for more complex post requests, only writes the `data` inside the output file
-	void Request::handle_raw_bytes_post(const char *filename) const
+	void Request::handle_open_file(const char *filename)
 	{
 		std::string output(UPLOADED);
 		output += filename;
-		std::ofstream output_file(output.c_str());
 
-		if (!output_file)
-			throw std::runtime_error("couldnt open output file!");
+		_upload_fd = open(output.c_str(), O_WRONLY | O_NONBLOCK);
+		_upload_queued = true;
 
-		if (!output_file.write(_message.get_body().data(), _message.get_body().size()))
-			throw std::runtime_error("couldnt write data to output file!");
+		if (_upload_fd < 0)
+			throw std::runtime_error("err: failed to open upload file!");
 	}
 
-	void Request::handle_post() const
+	bool Request::write_upload()
+	{
+		if (_upload_fd < 0)
+			throw std::runtime_error("err: upload fd is a negative value!");
+		const std::string &body = _message.get_body();
+		size_t	bytes_written = 0;
+		if (body.size() == 0)
+			return true;
+
+		bytes_written = write(_upload_fd, body.c_str() + _written, DEFAULT_READ);
+		if (bytes_written < 0)
+			throw std::runtime_error("err: write() error on upload_fd!");
+
+		_written += bytes_written;
+		if (_written == body.size())
+			return true;
+
+		return false;
+	}
+
+	void Request::handle_post()
 	{
 		const std::string &content_type = _message.get_header_value(Defaults::get_header_field(HeaderField::CONTENT_TYPE));
 
@@ -148,27 +165,27 @@ namespace http
 			std::cout << "MULTIPART_FOMR_DATA POST REACHED()" << std::endl;
 		else if (content_type == Defaults::get_content_type(ContentType::OCTEC_STREAM))
 		{
-			handle_raw_bytes_post("raw_data");
+			handle_open_file("raw_data");
 			std::cout << "OCTET_STREAM REACHED" << std::endl;
 		}
 		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_JPEG))
 		{
-			handle_raw_bytes_post("img.jpg");
+			handle_open_file("img.jpg");
 			std::cout << "IMAGE_JPEG REACHED" << std::endl;
 		}
 		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_PNG))
 		{
-			handle_raw_bytes_post("img.png");
+			handle_open_file("img.png");
 			std::cout << "IMAGE_PNG REACHED" << std::endl;
 		}
 		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_WEBP))
 		{
-			handle_raw_bytes_post("img.webp");
+			handle_open_file("img.webp");
 			std::cout << "IMAGE_WEBP REACHED" << std::endl;
 		}
 		else if (content_type == Defaults::get_content_type(ContentType::IMAGE_GIF))
 		{
-			handle_raw_bytes_post("img.gif");
+			handle_open_file("img.gif");
 			std::cout << "IMAGE_GIF REACHED" << std::endl;
 		}
 	}

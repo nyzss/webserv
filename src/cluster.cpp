@@ -6,11 +6,12 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 14:07:49 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 15:18:21 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cluster.hpp"
+#include "common.hpp"
 #include <webserv.hpp>
 
 namespace http
@@ -68,6 +69,13 @@ namespace http
 					write_client(static_cast<Client*>(data.ptr));
 				}
 			}
+			else if (data.type == EP_RESOURCE)// RESOURCE HANDLING HERE
+			{
+				if (current.events & EPOLLOUT)
+				{
+					write_upload(static_cast<Client*>(data.ptr));
+				}
+			}
 		}
 	}
 
@@ -79,9 +87,45 @@ namespace http
 
 		if (finished)
 		{
+			if (client->get_upload_status())
+			{
+				FD	upload_fd = client->get_upload_fd();
+
+				epoll_event event = build_event(EPOLLOUT, upload_fd);
+				add_data(upload_fd, EP_RESOURCE, client);
+
+				ctl(EPOLL_CTL_DEL, socket_fd, NULL);
+				std::cout << "DEBUG: here, upload_fd: " << upload_fd << std::endl;
+				ctl(EPOLL_CTL_ADD, upload_fd, &event);
+			}
+			else
+			{
+				epoll_event event = build_event(EPOLLOUT, socket_fd);
+
+				ctl(EPOLL_CTL_MOD, socket_fd, &event);
+			}
+		}
+	}
+
+	void	Cluster::write_upload(Client *client)
+	{
+		// trycatch here
+		// if i catch an error -> it means upload has somehow failed
+		// return a response status code and html page according to it.
+
+		bool	finished = client->upload();
+
+		if (finished)
+		{
+			SOCKET	socket_fd = client->get_socketfd();
+			FD		upload_fd = client->get_upload_fd();
+
 			epoll_event event = build_event(EPOLLOUT, socket_fd);
 
-			ctl(EPOLL_CTL_MOD, socket_fd, &event);
+			std::cout << "DEBUG: upload -> can you reach here tho" << std::endl;
+			ctl(EPOLL_CTL_ADD, socket_fd, &event);
+			ctl(EPOLL_CTL_DEL, upload_fd, NULL);
+			_data.erase(upload_fd);
 		}
 	}
 
@@ -127,14 +171,19 @@ namespace http
 
 	void Cluster::add_data(SOCKET fd, EP_TYPE type, void *ptr)
 	{
+		add_data(fd, fd, type, ptr);
+	}
+
+	void Cluster::add_data(SOCKET id, SOCKET stored_fd, EP_TYPE type, void *ptr)
+	{
 		EP_INFO	ep;
 
-		ep.fd = fd;
+		ep.fd = stored_fd;
 		ep.ptr = ptr;
 		ep.type = type;
-		if (_data.find(ep.fd) != _data.end())
+		if (_data.find(id) != _data.end())
 			throw std::runtime_error("_data: fd already exists");
-		_data[ep.fd] = ep;
+		_data[id] = ep;
 	}
 
 	Cluster::~Cluster()
@@ -163,7 +212,11 @@ namespace http
 	void Cluster::ctl(int op, SOCKET fd, EP_EVENT* event)
 	{
 		if (epoll_ctl(_instance, op, fd, event) < 0)
+		{
+			std::cout << fd << ", " << op << std::endl;
+			perror("epoll_ctl here");
 			throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+		}
 	}
 
 	void Cluster::close_instance()
