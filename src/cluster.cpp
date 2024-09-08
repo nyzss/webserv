@@ -6,10 +6,11 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 20:39:57 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 10:26:29 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "cluster.hpp"
 #include <webserv.hpp>
 
 namespace http
@@ -57,7 +58,7 @@ namespace http
 			{
 				handle_new_client(data.fd);
 			}
-			else // CLIENT HANDLING HERE
+			else if (data.type == EP_CLIENT)// CLIENT HANDLING HERE
 			{
 				if (current.events & EPOLLIN) // CLIENT REQUEST
 				{
@@ -73,20 +74,10 @@ namespace http
 
 	void	Cluster::read_client(Client *client)
 	{
-		client->request();
+		bool finished = client->request();
 
 		SOCKET socket_fd = client->get_socketfd();
 
-		bool finished = client->get_finished();
-		// bool resource = client->has_resource();
-
-		// if (resource)
-		// {
-		// 	epoll_event event = build_event(EPOLLOUT, client);
-
-		// 	if (epoll_ctl(_instance, EPOLL_CTL_ADD, resource_fd, &event) < 0)
-		// 		throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
-		// }
 		if (finished)
 		{
 			epoll_event event = build_event(EPOLLOUT, socket_fd);

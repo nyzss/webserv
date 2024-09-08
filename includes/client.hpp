@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:34:53 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:04:46 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 10:26:05 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ namespace http
 
 	public:
 		void	reset();
-		void	request();
+		bool	request();
 		void	response();
 		void	get_connection();
 

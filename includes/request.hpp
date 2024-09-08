@@ -58,7 +58,7 @@ namespace http
 		// Request (const std::string &req); // obsolete
 
 	public:
-		void read();
+		bool read();
 
 	private:
 		void receive();
@@ -78,6 +78,7 @@ namespace http
 		std::string get_method_str() const;
 		bool get_finished() const;
 		SOCKET	get_sockfd() const;
+		friend class Client;
 	};
 }
 

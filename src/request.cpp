@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 12:57:16 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 10:25:34 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ namespace http
 			this->_path = tokens[1];
 	}
 
-	void	Request::read()
+	bool	Request::read()
 	{
 		receive();
 		if (_message.get_finished() || _finished)
@@ -119,8 +119,10 @@ namespace http
 				handle_header();
 				handle_post();
 				debug();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	// for simple post requests, to write the whole body inside output file
@@ -192,11 +194,6 @@ namespace http
 	std::string Request::get_method_str() const
 	{
 		return Request::_methods_arr[_method];
-	}
-
-	bool Request::get_finished() const
-	{
-		return _finished;
 	}
 
 	SOCKET	Request::get_sockfd() const

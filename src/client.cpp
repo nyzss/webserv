@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:05:03 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 10:25:57 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ namespace http
 	Client::~Client()
 	{}
 
-	void	Client::request()
+	bool	Client::request()
 	{
-		_req.read();
+		return _req.read();
 	}
 
 	void	Client::response()
@@ -72,6 +72,6 @@ namespace http
 
 	bool	Client::get_finished() const
 	{
-		return _req.get_finished();
+		return _req._finished;
 	}
 }
