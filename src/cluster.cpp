@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 10:26:29 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 14:07:49 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,7 @@ namespace http
 		add_data(server_fd, EP_SERVER, server);
 		EP_EVENT event = build_event(EPOLLIN, server_fd);
 
-		if (epoll_ctl(_instance, EPOLL_CTL_ADD, server_fd, &event) < 0)
-			throw std::runtime_error("fatal: failed to add server to epoll_ctl");
+		ctl(EPOLL_CTL_ADD, server_fd, &event);
 	}
 
 	void Cluster::start()
@@ -82,8 +81,7 @@ namespace http
 		{
 			epoll_event event = build_event(EPOLLOUT, socket_fd);
 
-			if (epoll_ctl(_instance, EPOLL_CTL_MOD, socket_fd, &event) < 0)
-				throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+			ctl(EPOLL_CTL_MOD, socket_fd, &event);
 		}
 	}
 
@@ -91,8 +89,7 @@ namespace http
 	{
 		client->response();
 		SOCKET socket_fd = client->get_socketfd();
-		if (epoll_ctl(_instance, EPOLL_CTL_DEL, socket_fd, NULL) < 0)
-			throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+		ctl(EPOLL_CTL_DEL, socket_fd, NULL);
 		delete client;
 		_data.erase(socket_fd);
 	}
@@ -105,8 +102,7 @@ namespace http
 		add_data(c_socket, EP_CLIENT, client);
 		EP_EVENT event = build_event(EPOLLIN, c_socket);
 
-		if (epoll_ctl(_instance, EPOLL_CTL_ADD, c_socket, &event) < 0)
-			throw std::runtime_error("fatal: failed to add client to epoll_instance!");
+		ctl(EPOLL_CTL_ADD, c_socket, &event);
 	}
 
 	void Cluster::start_servers()
@@ -162,6 +158,12 @@ namespace http
 				delete static_cast<Client*>(curr.ptr);
 			}
 		}
+	}
+
+	void Cluster::ctl(int op, SOCKET fd, EP_EVENT* event)
+	{
+		if (epoll_ctl(_instance, op, fd, event) < 0)
+			throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
 	}
 
 	void Cluster::close_instance()

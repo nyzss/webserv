@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:34:53 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 10:26:05 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 14:01:58 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,9 @@ namespace http
 		void	response();
 		void	get_connection();
 
-	public:
-		bool	get_finished() const;
+	private:
+		void	debug() const;
+
 	};
 }
 #endif /* CLIENT_HPP */

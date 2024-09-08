@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 10:25:57 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 14:02:02 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,6 @@ namespace http
 			throw std::runtime_error("accept error on client");
 		non_blocking();
 		this->_req = Request(_fd);
-
-		// std::cout << "-------CLIENT DATA--------" << std::endl;
-		// std::cout << "socklen_t: " << this->_sock_len << std::endl;
-		// std::cout << "sin_addr: " << inet_ntoa(this->_data.sin_addr) << std::endl;
-		// std::cout << "port: " << ntohs(this->_data.sin_port) << std::endl;
-		// std::cout << "family: " << this->_data.sin_family << std::endl;
-		// std::cout << "-----------END---------" << std::endl;
 	}
 
 	Client::Client(const Client &value) : Socket(value), _res(_req)
@@ -70,8 +63,13 @@ namespace http
 		_fd = -1;
 	}
 
-	bool	Client::get_finished() const
+	void	Client::debug() const
 	{
-		return _req._finished;
+		std::cout << "-------CLIENT DATA - [ " << this->_fd <<  " ]--------" << std::endl;
+		std::cout << "socklen_t: " << this->_sock_len << std::endl;
+		std::cout << "sin_addr: " << inet_ntoa(this->_data.sin_addr) << std::endl;
+		std::cout << "port: " << ntohs(this->_data.sin_port) << std::endl;
+		std::cout << "family: " << this->_data.sin_family << std::endl;
+		std::cout << "-----------END---------" << std::endl;
 	}
 }

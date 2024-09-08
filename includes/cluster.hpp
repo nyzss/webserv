@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:53:50 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 20:41:45 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 14:06:55 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ namespace http
 		EP_EVENT	build_event(uint32_t event, SOCKET fd);
 
 		void add_data(SOCKET fd, EP_TYPE type, void *ptr);
+
+		void ctl(int op, SOCKET fd, EP_EVENT* event);
 
 	private:
 		void start_servers();

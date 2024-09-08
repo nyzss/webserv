@@ -17,7 +17,7 @@
 #include <common.hpp>
 #include <parser.hpp>
 
-# define DEFAULT_READ 10240
+# define DEFAULT_READ 20480
 
 namespace http
 {
@@ -37,7 +37,7 @@ namespace http
 		Parser	_message;
 		SOCKET	_fd;
 
-		static const char *_methods_arr[];
+		static const char			*_methods_arr[];
 		static const std::string	separator;
 
 		size_t	_needed_size;
@@ -55,7 +55,6 @@ namespace http
 		Request (const Request &val);
 		~Request ();
 		Request & operator=(const Request &val);
-		// Request (const std::string &req); // obsolete
 
 	public:
 		bool read();
@@ -70,7 +69,6 @@ namespace http
 	private:
 		void handle_post() const;
 		void handle_raw_bytes_post(const char *filename) const;
-		void handle_raw_bytes_post(const char *filename, const std::string &data) const;
 
 	public:
 		std::string	get_path() const;

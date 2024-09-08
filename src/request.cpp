@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 09:17:05 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 10:25:34 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/08 13:55:31 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,8 @@ namespace http
 			{
 				_finished = true;
 				handle_header();
-				handle_post();
+				if (_method == POST)
+					handle_post();
 				debug();
 				return true;
 			}
@@ -125,14 +126,8 @@ namespace http
 		return false;
 	}
 
-	// for simple post requests, to write the whole body inside output file
-	void Request::handle_raw_bytes_post(const char *filename) const
-	{
-		handle_raw_bytes_post(filename, _message.get_body());
-	}
-
 	// for more complex post requests, only writes the `data` inside the output file
-	void Request::handle_raw_bytes_post(const char *filename, const std::string &data) const
+	void Request::handle_raw_bytes_post(const char *filename) const
 	{
 		std::string output(UPLOADED);
 		output += filename;
@@ -141,15 +136,12 @@ namespace http
 		if (!output_file)
 			throw std::runtime_error("couldnt open output file!");
 
-		if (!output_file.write(data.data(), data.size()))
+		if (!output_file.write(_message.get_body().data(), _message.get_body().size()))
 			throw std::runtime_error("couldnt write data to output file!");
 	}
 
 	void Request::handle_post() const
 	{
-		if (_method != POST)
-			return ;
-
 		const std::string &content_type = _message.get_header_value(Defaults::get_header_field(HeaderField::CONTENT_TYPE));
 
 		if (content_type.find(Defaults::get_content_type(ContentType::FORMDATA)) != std::string::npos)
