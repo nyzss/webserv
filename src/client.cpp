@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 15:26:08 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 15:49:40 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,30 +117,19 @@ namespace http
 		char buf[DEFAULT_READ];
 		size_t b_read = read(_pipe, buf, DEFAULT_READ);
 		if (b_read == 0)
-		{
-			// brute_close(_pipe);
 			return true;
-		}
 		else if (b_read > 0)
 		{
 			_cgi_buffer.append(buf, b_read);
 			Parser p(_cgi_buffer);
-				std::cout << "\n---------------------\n" << p.generate() << "\n------------------\n" << std::endl;
-
 			if (p.get_finished())
 			{
-				std::cout << "p:match: " << p.match_content_len() << std::endl;
 				if (p.match_content_len())
-				{
-					// brute_close(_pipe);
 					return true;
-				}
 			}
 		}
 		else if (b_read < 0)
-		{
 			throw std::runtime_error("err: cgi pipe read error");
-		}
 		return false;
 	}
 

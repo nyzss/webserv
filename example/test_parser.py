@@ -6,7 +6,8 @@ import sys
 # sys.stdout.write("Content-Type: text/html\r\n\r\n")
 
 
-print("Content-Type: text/html\n")
+print("Content-Length: 144") # wrong content_length
+print("Content-Type: text/html\n") # line endings with only '\n'
 
 print("<html>")
 print("<head>")

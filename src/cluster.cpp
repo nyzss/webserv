@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 15:38:12 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 15:48:55 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,10 +206,7 @@ namespace http
 	void Cluster::ctl(int op, SOCKET fd, EP_EVENT* event)
 	{
 		if (epoll_ctl(_instance, op, fd, event) < 0)
-		{
-			perror("epoll err");
 			throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
-		}
 	}
 
 	void Cluster::close_instance()
