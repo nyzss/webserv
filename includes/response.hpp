@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 21:40:37 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 11:19:26 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ namespace http
 		void builder();
 		void write();
 
-		void check_cgi();
+		// void check_cgi();
 		void cgi_handler(const std::string &cgi);
 
 	private:

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:53:50 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 14:06:55 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 11:57:41 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,8 @@ namespace http
 		void handle_new_client(SOCKET socket_fd);
 		void read_client(Client *client);
 		void write_client(Client *client);
+
+		void read_cgi(Client *client);
 
 	public:
 		void add_server(const Server *serv);

@@ -6,11 +6,13 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 14:07:49 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 11:59:46 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cluster.hpp"
+#include "common.hpp"
+#include <sys/epoll.h>
 #include <webserv.hpp>
 
 namespace http
@@ -36,7 +38,7 @@ namespace http
 	void Cluster::start()
 	{
 		start_servers();
-		while (true)
+		while (!_should_end)
 		{
 			_last_ready = epoll_wait(_instance, _queue, MAX_SERVERS, 0);
 			if (_last_ready < 0)
@@ -68,6 +70,13 @@ namespace http
 					write_client(static_cast<Client*>(data.ptr));
 				}
 			}
+			else if (data.type == EP_CGI)
+			{
+				if (current.events & EPOLLIN)
+				{
+					read_cgi(static_cast<Client*>(data.ptr));
+				}
+			}
 		}
 	}
 
@@ -75,13 +84,39 @@ namespace http
 	{
 		bool finished = client->request();
 
-		SOCKET socket_fd = client->get_socketfd();
+		//handle cgi here, so that content is ready when write_client() has to be called.
+		if (finished)
+		{
+			SOCKET socket_fd = client->get_socketfd();
+
+			if (client->has_cgi())
+			{
+				PIPE	pipe_fd = client->get_pipe_fd();
+				epoll_event event = build_event(EPOLLIN, pipe_fd);
+
+				add_data(pipe_fd, EP_CGI, client);
+				ctl(EPOLL_CTL_ADD, pipe_fd, &event);
+				ctl(EPOLL_CTL_DEL, socket_fd, NULL);
+			}
+			else
+			{
+				epoll_event event = build_event(EPOLLOUT, socket_fd);
+
+				ctl(EPOLL_CTL_MOD, socket_fd, &event);
+			}
+		}
+	}
+
+	void	Cluster::read_cgi(Client *client)
+	{
+		bool finished = client->cgi();
 
 		if (finished)
 		{
-			epoll_event event = build_event(EPOLLOUT, socket_fd);
+			SOCKET	socket_fd = client->get_socketfd();
 
-			ctl(EPOLL_CTL_MOD, socket_fd, &event);
+			epoll_event event = build_event(EPOLLOUT, socket_fd);
+			ctl(EPOLL_CTL_ADD, socket_fd, &event);
 		}
 	}
 
