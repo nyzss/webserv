@@ -6,11 +6,12 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 13:42:35 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 15:26:08 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "request.hpp"
+#include "utils.hpp"
 #include <stdexcept>
 #include <webserv.hpp>
 
@@ -91,6 +92,7 @@ namespace http
 		}
 		close(fd[1]);
 		_pipe = fd[0];
+		set_non_blocking(_pipe);
 	}
 
 	bool	Client::request()
@@ -101,7 +103,10 @@ namespace http
 		{
 			std::string	ext = get_extension(_req.get_path());
 			if (ext == "py")
+			{
+				cgi_handler("python");
 				_cgi = true;
+			}
 		}
 
 		return finished;
@@ -109,33 +114,33 @@ namespace http
 
 	bool	Client::cgi()
 	{
-		// std::string	cgi_buffer;
 		char buf[DEFAULT_READ];
 		size_t b_read = read(_pipe, buf, DEFAULT_READ);
 		if (b_read == 0)
 		{
-			close(_pipe);
-			_pipe = -1;
+			// brute_close(_pipe);
 			return true;
 		}
 		else if (b_read > 0)
 		{
-			_cgi_buffer.append(buf);
+			_cgi_buffer.append(buf, b_read);
+			Parser p(_cgi_buffer);
+				std::cout << "\n---------------------\n" << p.generate() << "\n------------------\n" << std::endl;
+
+			if (p.get_finished())
+			{
+				std::cout << "p:match: " << p.match_content_len() << std::endl;
+				if (p.match_content_len())
+				{
+					// brute_close(_pipe);
+					return true;
+				}
+			}
 		}
 		else if (b_read < 0)
 		{
 			throw std::runtime_error("err: cgi pipe read error");
 		}
-
-		// char buf[DEFAULT_READ];
-		// int	b_read;
-		// while ((b_read = read(fd[0], buf, 1024)))
-		// 	cgi_buffer.append(buf, b_read);
-		// close(fd[0]);
-
-		// _message = cgi_buffer;
-		// _message.add_start_line(StatusCode::OK);
-		// _message.append(HeaderField::CONNECTION, "close");
 		return false;
 	}
 
@@ -146,9 +151,7 @@ namespace http
 
 	void	Client::reset()
 	{
-		if (_fd != -1)
-			close(_fd);
-		_fd = -1;
+		brute_close(_pipe);
 	}
 
 	PIPE	Client::get_pipe_fd() const

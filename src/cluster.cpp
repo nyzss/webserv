@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/25 14:54:03 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 11:59:46 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 15:38:12 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,10 +113,13 @@ namespace http
 
 		if (finished)
 		{
+			PIPE	pipe_fd = client->get_pipe_fd();
 			SOCKET	socket_fd = client->get_socketfd();
 
 			epoll_event event = build_event(EPOLLOUT, socket_fd);
 			ctl(EPOLL_CTL_ADD, socket_fd, &event);
+			ctl(EPOLL_CTL_DEL, pipe_fd, NULL);
+			remove_data(pipe_fd);
 		}
 	}
 
@@ -126,7 +129,7 @@ namespace http
 		SOCKET socket_fd = client->get_socketfd();
 		ctl(EPOLL_CTL_DEL, socket_fd, NULL);
 		delete client;
-		_data.erase(socket_fd);
+		remove_data(socket_fd);
 	}
 
 	void Cluster::handle_new_client(SOCKET socket_fd)
@@ -172,6 +175,11 @@ namespace http
 		_data[ep.fd] = ep;
 	}
 
+	void Cluster::remove_data(FD fd)
+	{
+		_data.erase(fd);
+	}
+
 	Cluster::~Cluster()
 	{
 		close_instance();
@@ -198,7 +206,10 @@ namespace http
 	void Cluster::ctl(int op, SOCKET fd, EP_EVENT* event)
 	{
 		if (epoll_ctl(_instance, op, fd, event) < 0)
+		{
+			perror("epoll err");
 			throw std::runtime_error("Failed to add to epoll instance (epoll_ctl)");
+		}
 	}
 
 	void Cluster::close_instance()
