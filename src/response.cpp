@@ -26,18 +26,23 @@ namespace http
 		_fd = -1;
 	}
 
-	void Response::send()
+	void Response::send(bool cgi, const std::string &cgi_buffer)
 	{
 		this->_fd = _req.get_sockfd();
 		if (_fd < 0)
 			throw std::runtime_error("response object initialised with invalid fd");
 
-		// check_cgi();
-		// if (!_cgi)
-		// {
-		// }
-		init_resource();
-		builder();
+		if (cgi)
+		{
+			_message = cgi_buffer;
+			_message.add_start_line(StatusCode::OK);
+			_message.append(HeaderField::CONNECTION, "close");
+		}
+		else
+		{
+			init_resource();
+			builder();
+		}
 		write();
 	}
 

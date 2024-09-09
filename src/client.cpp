@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 12:02:13 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 13:42:35 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,10 @@ namespace http
 	}
 
 	Client::~Client()
-	{}
+	{
+		if (_pipe != -1)
+			close(_pipe);
+	}
 
 	void Client::cgi_handler(const std::string &cgi)
 	{
@@ -110,7 +113,11 @@ namespace http
 		char buf[DEFAULT_READ];
 		size_t b_read = read(_pipe, buf, DEFAULT_READ);
 		if (b_read == 0)
-			return false;
+		{
+			close(_pipe);
+			_pipe = -1;
+			return true;
+		}
 		else if (b_read > 0)
 		{
 			_cgi_buffer.append(buf);
@@ -134,7 +141,7 @@ namespace http
 
 	void	Client::response()
 	{
-		_res.send();
+		_res.send(_cgi, _cgi_buffer);
 	}
 
 	void	Client::reset()

@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 11:19:26 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 13:41:47 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ namespace http
 		~Response ();
 
 	public:
-		void send();
+		void send(bool cgi, const std::string &cgi_buffer);
 
 	private:
 		void read_file(std::ifstream &file);
