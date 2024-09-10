@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/10 14:56:20 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 15:15:17 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ namespace http
 {
 	Client::Client() : Socket(), _res(_req)
 	{
+		asdf
 		_server_sock = -1;
 		_sock_len = sizeof(_data);
 		_cgi = false;
