@@ -138,13 +138,10 @@ namespace http
 	{
 		_body = body;
 		size_t	len = std::atoll(get_header_value(HeaderField::CONTENT_LENGTH).c_str());
-		if (len >= _body.length())
-		{
-			if (len == _body.length())
-				_match_body_len = true;
-			return ;
-		}
-		set_header_value(HeaderField::CONTENT_LENGTH, to_string(_body.length()));
+		if (len == _body.length())
+			_match_body_len = true;
+		else
+			set_header_value(HeaderField::CONTENT_LENGTH, to_string(_body.length()));
 	}
 
 	size_t	Parser::find_header_end(const std::string &s)

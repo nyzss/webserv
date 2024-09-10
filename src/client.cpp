@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 15:49:40 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 10:55:29 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,10 +123,7 @@ namespace http
 			_cgi_buffer.append(buf, b_read);
 			Parser p(_cgi_buffer);
 			if (p.get_finished())
-			{
-				if (p.match_content_len())
-					return true;
-			}
+				return true;
 		}
 		else if (b_read < 0)
 			throw std::runtime_error("err: cgi pipe read error");
