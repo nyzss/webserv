@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 14:25:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 08:59:42 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 11:10:48 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ namespace http
 		{
 			OK,
 			NOT_FOUND,
+			INTERNAL_SERVER_ERROR,
 			COUNT
 		};
 	};
@@ -66,6 +67,7 @@ namespace http
 
 	public:
 		static const std::string	html_not_found;
+		static const std::string	html_internal_server_error;
 
 	public:
 		static const char	*get_status_code(StatusCode::Value code);

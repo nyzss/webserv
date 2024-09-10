@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:34:53 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 12:00:17 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 14:56:25 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,10 @@ namespace http
 		socklen_t	_sock_len;
 
 	private:
-		bool		_cgi;
-		std::string	_cgi_buffer;
-		PIPE		_pipe;
+		bool				_cgi;
+		std::string			_cgi_buffer;
+		PIPE				_pipe;
+		StatusCode::Value	_cgi_status;
 
 	private:
 		Client ();

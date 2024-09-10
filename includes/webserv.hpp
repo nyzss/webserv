@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:26 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 10:15:20 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 13:58:26 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include "defaults.hpp"
 
 #include "utils.hpp"
+#include "exceptions.hpp"
 
 # define UPLOADED "example/upload/"
 

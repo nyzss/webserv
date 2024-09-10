@@ -6,13 +6,10 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/10 10:55:29 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 14:56:20 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "request.hpp"
-#include "utils.hpp"
-#include <stdexcept>
 #include <webserv.hpp>
 
 namespace http
@@ -23,6 +20,7 @@ namespace http
 		_sock_len = sizeof(_data);
 		_cgi = false;
 		_pipe = -1;
+		_cgi_status = StatusCode::OK;
 		std::memset(&this->_data, 0, sizeof(this->_data));
 	}
 
@@ -32,6 +30,7 @@ namespace http
 		_sock_len = sizeof(_data);
 		_cgi = false;
 		_pipe = -1;
+		_cgi_status = StatusCode::OK;
 		get_connection();
 	}
 
@@ -56,6 +55,7 @@ namespace http
 		this->_cgi = value._cgi;
 		this->_cgi_buffer = value._cgi_buffer;
 		this->_pipe = value._pipe;
+		this->_cgi_status = value._cgi_status;
 	}
 
 	Client::~Client()
@@ -71,28 +71,48 @@ namespace http
 
 		std::string	_prefix = "example";
 
-		if (pipe(fd) != 0)
-			throw std::runtime_error("failed to initialise pipes for cgi");
-		pid_t pid = fork();
-		if (pid < 0)
-			throw std::runtime_error("failed to fork process for cgi");
-		if (pid == 0)
+		try
 		{
 			std::string	exec = "/usr/bin/" + cgi;
-			std::string file = _prefix + _req.get_path();
+			if (!is_file(exec) || access(exec.c_str(), X_OK | F_OK) != 0)
+				throw Exceptions::ExecutableNotFound();
 
-			args[0] = const_cast<char *>(exec.c_str());
-			args[1] = const_cast<char*>(file.c_str());
-			args[2] = NULL;
-			dup2(fd[1], STDOUT_FILENO);
+			std::string file = _prefix + _req.get_path();
+			if (!is_file(file))
+				throw Exceptions::CGINotFound();
+
+			if (pipe(fd) != 0)
+				throw std::runtime_error("failed to initialise pipes for cgi");
+			pid_t pid = fork();
+			if (pid < 0)
+				throw std::runtime_error("failed to fork process for cgi");
+			if (pid == 0)
+			{
+				args[0] = const_cast<char *>(exec.c_str());
+				args[1] = const_cast<char*>(file.c_str());
+				args[2] = NULL;
+				dup2(fd[1], STDOUT_FILENO);
+				close(fd[1]);
+				close(fd[0]);
+				execve(args[0], args, environ);
+				throw Exceptions::Unhandled();
+			}
 			close(fd[1]);
-			close(fd[0]);
-			execve(args[0], args, environ);
-			throw std::runtime_error("execve failed, exit.");
+			_pipe = fd[0];
+			set_non_blocking(_pipe);
 		}
-		close(fd[1]);
-		_pipe = fd[0];
-		set_non_blocking(_pipe);
+		catch (Exceptions::ExecutableNotFound)
+		{
+			_cgi_status = StatusCode::INTERNAL_SERVER_ERROR;
+		}
+		catch (Exceptions::CGINotFound)
+		{
+			_cgi_status = StatusCode::NOT_FOUND;
+		}
+		catch (std::exception &e)
+		{
+			throw Exceptions::Unhandled();
+		}
 	}
 
 	bool	Client::request()
@@ -105,7 +125,8 @@ namespace http
 			if (ext == "py")
 			{
 				cgi_handler("python");
-				_cgi = true;
+				if (_cgi_status == StatusCode::OK)
+					_cgi = true;
 			}
 		}
 
@@ -123,7 +144,13 @@ namespace http
 			_cgi_buffer.append(buf, b_read);
 			Parser p(_cgi_buffer);
 			if (p.get_finished())
+			{
+				if (!p.match_content_len())
+				{
+					_cgi_status = StatusCode::INTERNAL_SERVER_ERROR;
+				}
 				return true;
+			}
 		}
 		else if (b_read < 0)
 			throw std::runtime_error("err: cgi pipe read error");
@@ -132,7 +159,7 @@ namespace http
 
 	void	Client::response()
 	{
-		_res.send(_cgi, _cgi_buffer);
+		_res.send(_cgi, _cgi_buffer, _cgi_status);
 	}
 
 	void	Client::reset()

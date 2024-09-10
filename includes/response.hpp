@@ -6,12 +6,11 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:05:08 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/09 13:41:47 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 15:00:10 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-#include "parser.hpp"
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
@@ -42,7 +41,7 @@ namespace http
 		~Response ();
 
 	public:
-		void send(bool cgi, const std::string &cgi_buffer);
+		void send(bool cgi, const std::string &cgi_buffer, StatusCode::Value cgi_status);
 
 	private:
 		void read_file(std::ifstream &file);

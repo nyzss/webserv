@@ -10,10 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "defaults.hpp"
-#include "utils.hpp"
-#include <ios>
-#include <sstream>
 #include <webserv.hpp>
 
 namespace http
@@ -26,13 +22,17 @@ namespace http
 		_fd = -1;
 	}
 
-	void Response::send(bool cgi, const std::string &cgi_buffer)
+	void Response::send(bool cgi, const std::string &cgi_buffer, StatusCode::Value cgi_status)
 	{
 		this->_fd = _req.get_sockfd();
 		if (_fd < 0)
 			throw std::runtime_error("response object initialised with invalid fd");
 
-		if (cgi)
+		if (cgi_status != StatusCode::OK)
+		{
+			_message = Parser(cgi_status);
+		}
+		else if (cgi)
 		{
 			_message = cgi_buffer;
 			_message.add_start_line(StatusCode::OK);
