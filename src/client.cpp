@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/10 15:15:17 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 15:17:22 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ namespace http
 {
 	Client::Client() : Socket(), _res(_req)
 	{
-		asdf
 		_server_sock = -1;
 		_sock_len = sizeof(_data);
 		_cgi = false;
@@ -102,15 +101,15 @@ namespace http
 			_pipe = fd[0];
 			set_non_blocking(_pipe);
 		}
-		catch (Exceptions::ExecutableNotFound)
+		catch (const Exceptions::ExecutableNotFound &e)
 		{
 			_cgi_status = StatusCode::INTERNAL_SERVER_ERROR;
 		}
-		catch (Exceptions::CGINotFound)
+		catch (const Exceptions::CGINotFound &e)
 		{
 			_cgi_status = StatusCode::NOT_FOUND;
 		}
-		catch (std::exception &e)
+		catch (const std::exception &e)
 		{
 			throw Exceptions::Unhandled();
 		}
