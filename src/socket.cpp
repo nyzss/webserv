@@ -6,10 +6,11 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 20:05:40 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 09:09:37 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 13:48:29 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "utils.hpp"
 #include <webserv.hpp>
 
 namespace http
@@ -49,16 +50,7 @@ namespace http
 
 	void	Socket::non_blocking() const
 	{
-		int	flags = fcntl(_fd, F_GETFL, 0);
-
-		if (flags < 0)
-			throw std::runtime_error("couldn't get flags of socketfd.");
-		flags |= O_NONBLOCK;
-
-		int	r_set = fcntl(_fd, F_SETFL, flags);
-
-		if (r_set < 0)
-			throw std::runtime_error("couldn't set flags of socketfd.");
+		set_non_blocking(_fd);
 	}
 
 	SOCKET	Socket::get_socketfd() const

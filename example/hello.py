@@ -4,6 +4,7 @@ import cgi
 import sys
 
 # print("Content-Type: text/html\n")
+sys.stdout.write("Content-Length: 144\r\n")
 sys.stdout.write("Content-Type: text/html\r\n\r\n")
 
 print("<html>")

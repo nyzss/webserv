@@ -10,10 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "defaults.hpp"
-#include "utils.hpp"
-#include <ios>
-#include <sstream>
 #include <webserv.hpp>
 
 namespace http
@@ -26,68 +22,28 @@ namespace http
 		_fd = -1;
 	}
 
-	void Response::send()
+	void Response::send(bool cgi, const std::string &cgi_buffer, StatusCode::Value cgi_status)
 	{
 		this->_fd = _req.get_sockfd();
 		if (_fd < 0)
 			throw std::runtime_error("response object initialised with invalid fd");
 
-		check_cgi();
-		if (!_cgi)
+		if (cgi_status != StatusCode::OK)
+		{
+			_message = Parser(cgi_status);
+		}
+		else if (cgi)
+		{
+			_message = cgi_buffer;
+			_message.add_start_line(StatusCode::OK);
+			_message.append(HeaderField::CONNECTION, "close");
+		}
+		else
 		{
 			init_resource();
 			builder();
 		}
 		write();
-	}
-
-	void Response::cgi_handler(const std::string &cgi)
-	{
-		char	*args[3];
-		int		fd[2];
-
-		if (pipe(fd) != 0)
-			throw std::runtime_error("failed to initialise pipes for cgi");
-		pid_t pid = fork();
-		if (pid < 0)
-			throw std::runtime_error("failed to fork process for cgi");
-		if (pid == 0)
-		{
-			std::string	exec = "/usr/bin/" + cgi;
-			std::string file = _prefix + _req.get_path();
-
-			args[0] = const_cast<char *>(exec.c_str());
-			args[1] = const_cast<char*>(file.c_str());
-			args[2] = NULL;
-			dup2(fd[1], STDOUT_FILENO);
-			close(fd[1]);
-			close(fd[0]);
-			execve(args[0], args, environ);
-			throw std::runtime_error("execve failed, exit.");
-		}
-		close(fd[1]);
-
-		std::string	cgi_buffer;
-
-		char buf[DEFAULT_READ];
-		int	b_read;
-		while ((b_read = read(fd[0], buf, 1024)))
-			cgi_buffer.append(buf, b_read);
-		close(fd[0]);
-
-		_message = cgi_buffer;
-		_message.add_start_line(StatusCode::OK);
-		_message.append(HeaderField::CONNECTION, "close");
-	}
-
-	void	Response::check_cgi()
-	{
-		std::string	ext = get_extension(_req.get_path());
-		if (ext == "py")
-		{
-			_cgi = true;
-			cgi_handler("python3");
-		}
 	}
 
 	void Response::builder()
@@ -120,7 +76,7 @@ namespace http
 	{
 		debug();
 		std::string	combine = _message.generate();
-		int r_sd = ::send(_fd, combine.data(), combine.length(), 0);
+		ssize_t r_sd = ::send(_fd, combine.data(), combine.length(), 0);
 		if (r_sd < 0)
 			throw std::runtime_error("SHOULD SEND BACK SERVER ERROR HERE 500");
 	}

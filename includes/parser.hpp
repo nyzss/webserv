@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/26 08:40:20 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 16:20:21 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 14:21:39 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ namespace http
 	public:
 		Parser ();
 		Parser (const std::string &buffer);
+		Parser (StatusCode::Value code);
 		Parser (const Parser &val);
 		Parser &operator=(const Parser &val);
 		~Parser ();

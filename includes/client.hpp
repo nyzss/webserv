@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:34:53 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/08 14:01:58 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 14:56:25 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,12 @@ namespace http
 		socklen_t	_sock_len;
 
 	private:
+		bool				_cgi;
+		std::string			_cgi_buffer;
+		PIPE				_pipe;
+		StatusCode::Value	_cgi_status;
+
+	private:
 		Client ();
 
 	public:
@@ -41,11 +47,16 @@ namespace http
 		void	reset();
 		bool	request();
 		void	response();
+		bool	cgi();
 		void	get_connection();
 
 	private:
+		void	cgi_handler(const std::string &cgi);
 		void	debug() const;
 
+	public:
+		PIPE	get_pipe_fd() const;
+		bool	has_cgi() const;
 	};
 }
 #endif /* CLIENT_HPP */

@@ -40,6 +40,25 @@ namespace http
 		handle_buffer(buffer);
 	}
 
+	Parser::Parser (StatusCode::Value code)
+	{
+		_sep = Separator::CRLF;
+		_match_body_len = true;
+		add_start_line(code);
+		switch (code)
+		{
+			case StatusCode::NOT_FOUND:
+				add_body(Defaults::html_not_found);
+				break;
+			case StatusCode::INTERNAL_SERVER_ERROR:
+				add_body(Defaults::html_internal_server_error);
+				break;
+			default:
+				break;
+		}
+		append(HeaderField::CONNECTION, "close");
+	}
+
 	Parser &Parser::operator=(const Parser &val)
 	{
 		if (this != &val)
@@ -136,15 +155,13 @@ namespace http
 
 	void Parser::add_body(const std::string &body)
 	{
+		const std::string &val = get_header_value(HeaderField::CONTENT_LENGTH);
 		_body = body;
-		size_t	len = std::atoll(get_header_value(HeaderField::CONTENT_LENGTH).c_str());
-		if (len >= _body.length())
-		{
-			if (len == _body.length())
-				_match_body_len = true;
-			return ;
-		}
-		set_header_value(HeaderField::CONTENT_LENGTH, to_string(_body.length()));
+		size_t	len = std::atoll(val.c_str());
+		if (len == _body.length())
+			_match_body_len = true;
+		else if (len < _body.length())
+			set_header_value(HeaderField::CONTENT_LENGTH, to_string(_body.length()));
 	}
 
 	size_t	Parser::find_header_end(const std::string &s)

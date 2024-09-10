@@ -6,12 +6,10 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 14:25:49 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/27 13:40:13 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 14:56:57 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "defaults.hpp"
-#include <stdexcept>
 #include <webserv.hpp>
 
 namespace http
@@ -20,10 +18,15 @@ namespace http
 													"<h1>404 - Not Found</h1>"
 													"</html></body>";
 
+	const std::string	Defaults::html_internal_server_error =	"<html><body>"
+													"<h1>500 - Internal Server Error</h1>"
+													"</html></body>";
+
 	const char *Defaults::_status[] =
 	{
 		"200 OK",
 		"404 Not Found",
+		"500 Internal Server Error",
 	};
 
 	const char *Defaults::_fields[] =

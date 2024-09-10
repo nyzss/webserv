@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 08:56:44 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/26 11:02:33 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 14:49:52 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,24 @@ namespace http
 		return ext;
 	}
 
+	void	set_non_blocking(FD fd)
+	{
+		int	flags = fcntl(fd, F_GETFL, 0);
 
+		if (flags < 0)
+			throw std::runtime_error("err: couldn't set FD to be non_blocking.");
+		flags |= O_NONBLOCK;
+
+		if (fcntl(fd, F_SETFL, flags) < 0)
+			throw std::runtime_error("err: couldn't set FD to be non_blocking.");
+	}
+
+	void	brute_close(FD &fd)
+	{
+		if (fd != -1)
+		{
+			close(fd);
+			fd = -1;
+		}
+	}
 }

@@ -6,18 +6,19 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 11:53:09 by okoca             #+#    #+#             */
-/*   Updated: 2024/08/28 12:21:12 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/09 11:09:18 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "defaults.hpp"
-#include "parser.hpp"
 #include "webserv.hpp"
+
+bool _should_end = false;
 
 void	handle_sigint(int sig)
 {
 	(void)sig;
-	throw std::runtime_error("exiting...");
+	_should_end = true;
+	// throw std::runtime_error("exiting...");
 }
 
 int main()
