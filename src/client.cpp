@@ -6,7 +6,7 @@
 /*   By: okoca <okoca@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 19:47:10 by okoca             #+#    #+#             */
-/*   Updated: 2024/09/10 15:17:22 by okoca            ###   ########.fr       */
+/*   Updated: 2024/09/10 15:20:40 by okoca            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ namespace http
 	bool	Client::cgi()
 	{
 		char buf[DEFAULT_READ];
-		size_t b_read = read(_pipe, buf, DEFAULT_READ);
+		ssize_t b_read = ::read(_pipe, buf, DEFAULT_READ);
 		if (b_read == 0)
 			return true;
 		else if (b_read > 0)

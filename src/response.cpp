@@ -76,7 +76,7 @@ namespace http
 	{
 		debug();
 		std::string	combine = _message.generate();
-		int r_sd = ::send(_fd, combine.data(), combine.length(), 0);
+		ssize_t r_sd = ::send(_fd, combine.data(), combine.length(), 0);
 		if (r_sd < 0)
 			throw std::runtime_error("SHOULD SEND BACK SERVER ERROR HERE 500");
 	}
